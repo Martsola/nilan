@@ -20,8 +20,8 @@
 While validating Compact P support on this fork:
 
 - Repository: https://github.com/master3395/veista-nilan
-- Branch: `cts700-compact-p-mvp`
-- Copy `custom_components/nilan` from that branch, or add the fork as a custom HACS repository during testing
+- Branch: `master`
+- Copy `custom_components/nilan` from `master`, or add the fork as a custom HACS repository during testing
 
 ## Defaults
 

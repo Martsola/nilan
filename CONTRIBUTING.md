@@ -6,7 +6,7 @@ Thank you for helping improve the Nilan Home Assistant integration.
 
 Working fork: https://github.com/master3395/veista-nilan
 
-- CTS700 Compact P work: branch `cts700-compact-p-mvp`
+- Day-to-day CTS700 Compact P work lives on fork **`master`**
 - Upstream project: https://github.com/veista/nilan
 - Open a pull request to `veista/nilan` only when the change is ready and tested
 
