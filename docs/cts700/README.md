@@ -15,6 +15,10 @@ MVP / experimental support for Nilan **CTS700** controllers.
 |---|---|
 | Compact P | [compact-p.md](compact-p.md) |
 
+## Status
+
+MVP live-checked on Compact P Ethernet (04/08/2026). Details and register notes: [compact-p.md](compact-p.md). Current integration version: **1.3.1**.
+
 ## Out of MVP (for now)
 
 - Old CTS700 firmware maps (registers under 10000)

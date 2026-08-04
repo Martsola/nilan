@@ -202,16 +202,22 @@ class DeviceCTS700:
         return False
 
     async def get_ventilation_step(self) -> int | None:
-        """Get fan speed level."""
+        """Get fan speed as climate levels 0-4.
+
+        Compact P holding 21771 is percent (0-100) on live installs, not 0-4.
+        """
         value = await self._read_holding_unsigned(CTS700NewHoldingRegisters.fan_speed)
         if value is None:
             _LOGGER.error("Could not read get_ventilation_step")
+            return None
+        if value > 4:
+            return min(4, max(0, int(round(value / 25.0))))
         return value
 
     async def set_ventilation_step(self, mode: int) -> bool:
-        """Set fan speed level 0-4."""
+        """Set fan speed level 0-4 (writes percent 0/25/50/75/100 to 21771)."""
         if mode in (0, 1, 2, 3, 4):
-            await self._write_holding(CTS700NewHoldingRegisters.fan_speed, mode)
+            await self._write_holding(CTS700NewHoldingRegisters.fan_speed, mode * 25)
             return True
         return False
 

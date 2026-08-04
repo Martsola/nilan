@@ -654,5 +654,5 @@ class CTS700NewHoldingRegisters:
     t12_bottom_temperature_in_dhw_water_tank = 20522
     t12_bottom_state_in_dhw_water_tank = 20523
 
-    # Compact P fan speed level (not in Dec 2023 CTS700 branch list).
+    # Compact P fan speed percent 0-100 (not discrete 0-4; not in Dec 2023 list).
     fan_speed = 21771

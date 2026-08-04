@@ -206,9 +206,11 @@ class NilanClimate(NilanEntity, ClimateEntity):
         else:
             self._attr_hvac_action = HVACAction.OFF
 
-        if not self._hvac_on:
-            self._attr_hvac_mode = HVACAction.OFF
-        else:
+        if self._hvac_on is False:
+            self._attr_hvac_mode = HVACMode.OFF
+        elif self._hvac_on is True:
+            # Unmapped Compact P / odd mode values previously became None (HA "unknown").
             self._attr_hvac_mode = HVAC_MODE_TO_STATE.get(
-                await self._device.get_operation_mode()
+                await self._device.get_operation_mode(),
+                HVACMode.AUTO,
             )

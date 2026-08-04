@@ -31,12 +31,29 @@ No RS485 bridge is required for native Ethernet CTS700.
 | Supply | 20284 | Scale 0.1 |
 | Extract | 20286 | Scale 0.1 |
 | Humidity | 20164 | No 0.1 scale |
-| Fan speed | 21771 | |
+| Fan speed | 21771 | Percent 0-100 on Compact P (integration maps to climate levels 0-4) |
 | After heat exchange | 20288 | |
 | After heat pump | 20290 | |
 
 Protocol PDF (2018):  
 https://www.en.nilan.dk/Files/Files/Engelsk/Downloads/7.%20Modbus%20-%20BACnet/2018_04_Modbus_CTS700_Modbus_protokol.pdf
+
+## Live HA verification (04/08/2026)
+
+Side-install from this fork `master` on Home Assistant OS, CTS700 Compact P over Modbus TCP (unit id 1, port 502). Existing Modbus YAML was paused for the test so only one poller ran.
+
+| Check | Result |
+|---|---|
+| Room climate | Current ~24.5 C, setpoint 18 C |
+| Humidity | 39% |
+| DHW | Tank ~52 C |
+| Outdoor / T1 | ~15.9 C |
+| Fan (21771) | 75% (maps to climate fan level 3) |
+| Config flow | TCP → CTS700 → create entry OK |
+
+After the test, the Nilan config entry was removed and Modbus YAML restored as primary. Do not run YAML Modbus and this integration against the same unit at once.
+
+Fixes from that pass (v1.3.1): climate HVAC mode no longer stuck on `unknown` for unmapped operating-mode values; fan percent mapped to levels 0-4 for the climate entity.
 
 ## MVP entities
 
@@ -52,6 +69,7 @@ https://www.en.nilan.dk/Files/Files/Engelsk/Downloads/7.%20Modbus%20-%20BACnet/2
 - CO2 reads 0 without a CO2 module: hide unused entities
 - Avoid multiple Home Assistant pollers against the same CTS700
 - PDF labels can differ from live Compact P setpoints
+- Operating mode register `20120` is not a full CTS602-style heat/cool/auto enum on every Compact P; UI may show Auto when the raw value is unmapped
 
 ## Not this guide
 
