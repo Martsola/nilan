@@ -18,6 +18,13 @@
                     "serial": "Serial"
                 }
             },
+            "board": {
+                "title": "Select Controller Board",
+                "menu_options": {
+                    "cts602": "CTS602",
+                    "cts700": "CTS700 (Compact P MVP)"
+                }
+            },
             "tcp": {
                 "title": "TCP Configuration",
                 "data": {
@@ -27,7 +34,24 @@
                     "unit_id": "Unit ID"
                 }
             },
+            "tcp_config": {
+                "title": "TCP Configuration",
+                "data": {
+                    "name": "Device Name",
+                    "host_ip": "IP Address",
+                    "host_port": "Port",
+                    "unit_id": "Unit ID"
+                }
+            },
             "serial": {
+                "title": "Serial Configuration",
+                "data": {
+                    "name": "Device Name",
+                    "host_port": "Path",
+                    "unit_id": "Unit ID"
+                }
+            },
+            "serial_config": {
                 "title": "Serial Configuration",
                 "data": {
                     "name": "Device Name",

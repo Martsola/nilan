@@ -9,8 +9,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN
+from .const import BOARD_TYPE_CTS700, DOMAIN
 from .device import Device
+from .device_cts700 import DeviceCTS700
 
 PLATFORMS = [
     "binary_sensor",
@@ -27,7 +28,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Nilan CTS602 Modbus TCP from a config entry."""
+    """Set up Nilan Modbus from a config entry."""
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = entry.data
 
@@ -36,9 +37,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unit_id = entry.data["unit_id"]
     com_type = entry.data["com_type"]
     host_ip = entry.data["host_ip"]
-    # board_type = entry.data["board_type"]
+    board_type = entry.data.get("board_type", "CTS602")
 
-    device = Device(hass, name, com_type, host_ip, host_port, unit_id)
+    if board_type == BOARD_TYPE_CTS700:
+        device = DeviceCTS700(hass, name, com_type, host_ip, host_port, unit_id)
+    else:
+        device = Device(hass, name, com_type, host_ip, host_port, unit_id)
     try:
         await device.setup()
     except ValueError as ex:
@@ -46,7 +50,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = device
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    # entry.async_on_unload(entry.async_on_state_change())
     return True
 
 
@@ -85,7 +88,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 class NilanEntity(Entity):
     """Nilan Entity."""
 
-    def __init__(self, device: Device) -> None:
+    def __init__(self, device) -> None:
         """Initialize the instance."""
         self._device = device
 
@@ -96,7 +99,6 @@ class NilanEntity(Entity):
 
         return {
             "identifiers": {
-                # Serial numbers are unique identifiers within a specific domain
                 (DOMAIN, unique_id),
             },
             "name": self._device.get_device_name,

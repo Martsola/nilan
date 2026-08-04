@@ -1,3 +1,7 @@
 """Constants for the Nilan integration."""
 
 DOMAIN = "nilan"
+
+BOARD_TYPE_CTS602 = "CTS602"
+BOARD_TYPE_CTS700 = "CTS700"
+BOARD_TYPES = (BOARD_TYPE_CTS602, BOARD_TYPE_CTS700)
