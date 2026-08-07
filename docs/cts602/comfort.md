@@ -8,6 +8,10 @@
 | Typical unit id | 30 |
 | Config board choice | CTS602 |
 
+## Marketing aliases
+
+Comfort Top / LR / L/R / 450 / CT500 often report as **COMFORT** (13) or **COMFORTn** (31). See [../catalog/aliases.md](../catalog/aliases.md).
+
 ## Hardware
 
 Use a Modbus RTU↔TCP bridge or USB-RS485. See [hardware](../hardware.md).

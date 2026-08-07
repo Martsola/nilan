@@ -9,6 +9,10 @@
 | Config board choice | CTS602 |
 | Variants | CompactP, CompactP AIR, CompactP GEO |
 
+## Variants
+
+CompactP, CompactP AIR, CompactP GEO (software probe). Marketing names such as Compact P Nordic / AIR / EK / XL and **Compact P2*** usually map here when the board is CTS602. See [compact-p2.md](compact-p2.md) and [../catalog/aliases.md](../catalog/aliases.md).
+
 ## Important
 
 This guide is for Compact P units on a **CTS602** board (HMI type 44).

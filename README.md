@@ -8,7 +8,7 @@ Modbus TCP/RTU integration for Nilan ventilation and Compact units in Home Assis
 
 ## Vision (this fork)
 
-Ship CTS700 Compact P MVP (2018+ map) and CTS700 2015 legacy map beside stable CTS602, fix community-reported CTS602 bugs, and keep shared Lovelace **Nilan-only**. GEO / slave 4 stays out of scope until dumps exist.
+Ship CTS700 Compact P MVP (2018+ and 2015 maps) beside stable CTS602, document the full [nilan.no/produkter](https://www.nilan.no/produkter) catalog (bolig + næring) via coverage matrices, fix community CTS602 bugs, and keep shared Lovelace **Nilan-only**. GEO / slave 4 and CTS400 stay dump-gated until maps exist.
 
 ## Quick start
 
@@ -17,7 +17,13 @@ Ship CTS700 Compact P MVP (2018+ map) and CTS700 2015 legacy map beside stable C
 3. Confirm the detected board and unit id, or override manually.
 4. Typical unit ids: CTS602 **30**, Compact P CTS700 **1** (TCP port **502**).
 
-**CTS700 maps:** modern Compact P uses the **2018+** 20xxx map ([compact-p](docs/cts700/compact-p.md)). Older firmware uses the **2015** map under 10000 ([legacy-2015](docs/cts700/legacy-2015.md)).
+**Is my model supported?** See the catalog matrices:
+
+- [Bolig matrix](docs/catalog/bolig-matrix.md)
+- [Næring matrix](docs/catalog/naering-matrix.md)
+- [Marketing aliases](docs/catalog/aliases.md)
+
+**CTS700 maps:** modern Compact P uses the **2018+** 20xxx map ([compact-p](docs/cts700/compact-p.md)). Older firmware uses the **2015** map under 10000 ([legacy-2015](docs/cts700/legacy-2015.md)). **Compact P2** prefers CTS602 ([compact-p2](docs/cts602/compact-p2.md)).
 
 ### Install from this fork (HACS custom repository)
 
@@ -37,6 +43,9 @@ Fork: https://github.com/master3395/veista-nilan (`master`)
 |---|---|---|
 | CTS602 | Stable | [docs/cts602](docs/cts602/README.md) |
 | CTS700 | MVP | [docs/cts700](docs/cts700/README.md) |
+| CTS400 | Not implemented | [docs/naering/cts400.md](docs/naering/cts400.md) |
+
+Catalog: [docs/catalog](docs/catalog/bolig-matrix.md) · Commercial research: [docs/naering](docs/naering/README.md)
 
 Shared: [Hardware](docs/hardware.md) · [Installation](docs/installation.md) · [Dashboards](docs/dashboards.md) · [FAQ](docs/faq.md)
 
@@ -65,7 +74,7 @@ Shared: [Hardware](docs/hardware.md) · [Installation](docs/installation.md) · 
 | COMBI 302 T | 36 | [combi-302-t](docs/cts602/combi-302-t.md) |
 | VGU180 ek | 38 | [vgu180-ek](docs/cts602/vgu180-ek.md) |
 | VENTEC | 42 | [ventec](docs/cts602/ventec.md) |
-| CompactP (AIR/GEO) | 44 | [compactp](docs/cts602/compactp.md) |
+| CompactP (AIR/GEO) | 44 | [compactp](docs/cts602/compactp.md) · [compact-p2](docs/cts602/compact-p2.md) |
 
 ## CTS700 models
 
@@ -73,8 +82,11 @@ Shared: [Hardware](docs/hardware.md) · [Installation](docs/installation.md) · 
 |---|---|
 | Compact P (2018+ Ethernet map) | [compact-p](docs/cts700/compact-p.md) |
 | CTS700 2015 legacy map | [legacy-2015](docs/cts700/legacy-2015.md) |
+| GEO / slave 4 | [geo](docs/cts700/geo.md) (dump-gated) |
 
 MVP covers room climate, fan, temps, humidity, and DHW setpoint. Not full CTS700 family support yet. On 2018+ Compact P, do not use register **20260** as room current. Tracking: [veista/nilan#19](https://github.com/veista/nilan/issues/19).
+
+Full SKU coverage: [docs/catalog/bolig-matrix.md](docs/catalog/bolig-matrix.md) · [docs/catalog/naering-matrix.md](docs/catalog/naering-matrix.md).
 
 ## Support
 

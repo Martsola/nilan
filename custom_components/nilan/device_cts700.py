@@ -7,6 +7,10 @@ import logging
 from homeassistant.components.modbus import modbus
 from homeassistant.core import HomeAssistant
 
+from .capabilities import (
+    capabilities_for_cts700,
+    filter_attributes_by_capabilities,
+)
 from .device_map_cts700 import CTS700_ENTITY_MAP
 from .registers import CTS700NewHoldingRegisters
 
@@ -82,10 +86,17 @@ class DeviceCTS700:
         for entity, value in CTS700_ENTITY_MAP.items():
             self._attributes[entity] = value["entity_type"]
 
+        caps = capabilities_for_cts700()
+        self._capabilities = caps
+        self._attributes = filter_attributes_by_capabilities(
+            self._attributes, CTS700_ENTITY_MAP, caps
+        )
+
         outdoor = await self.get_t1_intake_temperature()
         if outdoor is not None:
             self._device_sw_ver = f"probe outdoor {outdoor:.1f} C"
         _LOGGER.debug("CTS700 attributes loaded: %s", list(self._attributes.keys()))
+        _LOGGER.debug("CTS700 capabilities=%s", sorted(caps))
 
     def get_assigned(self, platform: str):
         """Get platform assignment."""

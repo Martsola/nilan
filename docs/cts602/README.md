@@ -18,6 +18,8 @@ See the index table in [docs/README.md](../README.md).
 
 Most climate, sensor, water heater, select, number, and switch entities are supported when your bus version and hardware options allow them. Missing critical features: open an issue with logs and HMI type photos ([CONTRIBUTING.md](../../CONTRIBUTING.md)).
 
+Commercial Comfort 600+ / VR / VPR / VPM: see [commercial.md](commercial.md). Compact P2: see [compact-p2.md](compact-p2.md).
+
 ## CompactP note
 
 HMI type **CompactP** (id 44) may appear as CompactP, CompactP AIR, or CompactP GEO depending on software. That is still the **CTS602** board path, not CTS700 Ethernet. For Compact P with a **CTS700** controller, use [../cts700/compact-p.md](../cts700/compact-p.md).

@@ -1,4 +1,10 @@
-"""Modbus probe helpers for Nilan config flow."""
+"""Modbus probe helpers for Nilan config flow.
+
+Auto-detect order: CTS602 (incl. commercial units that share CTS602),
+then CTS700 2018+, then CTS700 2015 legacy. Never force commercial
+VR/VPM/Comfort 600 onto CTS700 Compact P maps without a dump.
+CTS400 is not probed until a verified map exists.
+"""
 
 from __future__ import annotations
 

@@ -8,6 +8,10 @@ import logging
 from homeassistant.components.modbus import modbus
 from homeassistant.core import HomeAssistant
 
+from .capabilities import (
+    capabilities_for_cts602,
+    filter_attributes_by_capabilities,
+)
 from .device_map import CTS602_DEVICE_TYPES, CTS602_ENTITY_MAP
 from .registers import CTS602HoldingRegisters, CTS602InputRegisters
 
@@ -52,6 +56,7 @@ class Device:
         self._modbus = modbus.ModbusHub(self.hass, self._client_config)
         self._attributes = {}
         self._air_geo_type = 0
+        self._capabilities = frozenset()
 
     async def async_close(self):
         """Close modbus connection."""
@@ -80,8 +85,13 @@ class Device:
             raise ValueError("hw_type returned None")
         if hw_type not in CTS602_DEVICE_TYPES:
             await self._modbus.async_close()
-            _LOGGER.error("HW type not supported")
-            raise ValueError("HW type not supported")
+            _LOGGER.error(
+                "HW type %s not supported. Share a dump: docs/catalog and CONTRIBUTING.",
+                hw_type,
+            )
+            raise ValueError(
+                f"HW type {hw_type} not supported (see docs/catalog and dump checklist)"
+            )
 
         bus_version = await self.get_bus_version()
 
@@ -141,6 +151,13 @@ class Device:
 
         if "get_controller_hardware_version" in self._attributes:
             self._device_hw_ver = await self.get_controller_hardware_version()
+
+        caps = capabilities_for_cts602(hw_type, self._air_geo_type)
+        self._capabilities = caps
+        self._attributes = filter_attributes_by_capabilities(
+            self._attributes, CTS602_ENTITY_MAP, caps
+        )
+        _LOGGER.debug("CTS602 capabilities=%s", sorted(caps))
 
     def get_assigned(self, platform: str):
         """Get platform assignment."""

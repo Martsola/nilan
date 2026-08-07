@@ -22,11 +22,11 @@ Auto-detect probes CTS602, then 2018+ CTS700, then 2015 CTS700.
 - **2018+ Compact P:** live-checked (04/08/2026). See [compact-p.md](compact-p.md).
 - **2015 legacy:** MVP from the 20150826 PDF; needs community dumps to refine sensor naming and DHW tank currents.
 
-Current integration version: **1.3.3**.
+Current integration version: **1.3.4**.
 
 ## Still out of scope
 
-- Full GEO / floor slave 4 feature set
+- Full GEO / floor slave 4 feature set ([geo.md](geo.md))
 - Full feature parity with CTS602 (alarms, week programs, all selects)
 - Installer auth at register 7777
 

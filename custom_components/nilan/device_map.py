@@ -1,6 +1,8 @@
 """Defines devices, entity types, supported entities per device and per version."""
 
 CTS602_DEVICE_TYPES = {
+    # Marketing aliases: custom_components/nilan/capabilities.py MARKETING_ALIASES
+    # and docs/catalog/aliases.md. Do not add type ids without a live control_type dump.
     2: "Comfort light",
     3: "Comfort Polar",
     4: "VPL 15c",

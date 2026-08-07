@@ -8,6 +8,10 @@
 | Typical unit id | 30 |
 | Config board choice | CTS602 |
 
+## Marketing aliases
+
+Combi 302 Polar typically maps here. See [../catalog/aliases.md](../catalog/aliases.md).
+
 ## Hardware
 
 Use a Modbus RTU↔TCP bridge or USB-RS485. See [hardware](../hardware.md).

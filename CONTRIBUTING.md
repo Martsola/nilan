@@ -32,7 +32,7 @@ Do not open drive-by PRs against unrelated branches.
 
 ## Reporting CTS700 issues
 
-CTS700 Compact P MVP is developed on this fork first. Still needed: GEO / slave 4 dumps and old firmware maps (registers under 10000).
+CTS700 Compact P MVP is developed on this fork first. Still needed: GEO / slave 4 dumps and confirmation of edge firmware maps.
 
 Please include:
 
@@ -56,6 +56,36 @@ If install fails with unsupported device:
 
 For other bugs, include: logs, Modbus version, device type and device version as shown in the integration.
 
+## Register dump checklist
+
+Use this when asking to mark a [catalog](docs/catalog/bolig-matrix.md) SKU as `supported`, or when install fails with an unknown type id.
+
+### Required
+
+1. **Segment:** bolig or næring (commercial)
+2. **Marketing model** from the plate (e.g. Comfort 600, Compact P2 AIR, VPM 240 M2)
+3. **Controller** if known: CTS602, CTS700, CTS400, unknown
+4. **Modbus unit id** and TCP vs serial / bridge
+5. **CTS602 `control_type`** (holding 1000) or debug log line `Device Type = …`
+6. **20–30 key register reads** with labels (temps, fan, humidity, DHW, alarms)
+7. Photos: plate + HMI type page (no personal home details)
+8. Example host only: `192.168.1.50`
+
+### Nice to have
+
+- Software / bus version
+- AIR vs GEO / Polar / EK options
+- Whether CTS700 20xxx or 2015 under-10000 map responds
+- Commercial: airflow setpoints and alarm words
+
+Open a GitHub issue with the **Unsupported device / register dump** template.
+
+### Want your SKU marked supported?
+
+1. File the dump issue above.
+2. Maintainers map marketing name → HMI type id / board in `docs/catalog/`.
+3. Only then are new type ids added to `CTS602_DEVICE_TYPES` (no invented maps).
+
 ## Pull requests
 
 1. Fork and create a topic branch from the branch you intend to improve.
@@ -70,6 +100,7 @@ For other bugs, include: logs, Modbus version, device type and device version as
 - Secrets belong in Home Assistant config / secrets, never in this repository.
 - CTS602 and CTS700 use different register maps and typical unit ids.
 - Keep modules readable; large device I/O belongs in dedicated modules (for example `device_cts700.py`).
+- Capability profiles live in `capabilities.py`; optional entity key `requires_capabilities`.
 
 ## License
 

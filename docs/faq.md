@@ -34,7 +34,15 @@ Use Home Assistant language **Norsk bokmål** (`nb`). This fork ships `translati
 
 ## Slave 4 / floor / GEO missing on Compact P?
 
-Often unavailable on Air-only Compact P installs. Documented as out of CTS700 MVP scope until dumps exist.
+Often unavailable on Air-only Compact P installs. Documented as dump-gated: [cts700/geo.md](cts700/geo.md).
+
+## Compact P2: CTS602 or CTS700?
+
+Current Nilan Compact P2 manuals list **CTS602**. Use board **CTS602** (unit id 30). See [cts602/compact-p2.md](cts602/compact-p2.md). Only use CTS700 if a dump shows 20xxx Ethernet registers.
+
+## Commercial Comfort 600 / VPM / VR / VPR?
+
+Product pages and gateway docs point to **CTS602** Modbus RS485 (default unit id 30). Choose **CTS602** or Auto-detect. If the HMI type id is unknown to the integration, share a dump. Full list: [catalog/naering-matrix.md](catalog/naering-matrix.md). Do not pick CTS700 Compact P maps for commercial units unless proven.
 
 ## Where are the dashboards?
 
