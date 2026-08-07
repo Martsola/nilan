@@ -143,6 +143,7 @@
           "maximum_supply_air_temperature_in_summer": {"name": "Maks tilluftstemperatur om sommeren"},
           "maximum_supply_air_temperature_in_winter": {"name": "Maks tilluftstemperatur om vinteren"},
           "room_temperature_neutral_zone": {"name": "Nøytral sone for romtemperatur"},
+          "central_heating_external_offset": {"name": "Sentralvarme ekstern offset"},
           "change_to_summer_state_setpoint": {"name": "Settpunkt for overgang til sommermodus"},
           "supply_fan_power_at_level_1": {"name": "Tilluftsvifte effekt på nivå 1"},
           "supply_fan_power_at_level_2": {"name": "Tilluftsvifte effekt på nivå 2"},
@@ -203,11 +204,11 @@
                   "2": "Fuktighet + CO2"
               }
           },
-          "compressor_heating_priority": {
-              "name": "Prioritet for kompressoroppvarming",
+          "hot_water_priority": {
+              "name": "Varmtvannsprioritet",
               "state": {
                   "0": "Vann",
-                  "1": "Luft"
+                  "1": "Inntak"
               }
           },
           "cooling_mode_ventilation_level": {

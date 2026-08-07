@@ -13,6 +13,7 @@ Setup guides for each controller / model supported by this integration.
 
 - [Hardware and connection](hardware.md)
 - [Installation](installation.md)
+- [Dashboards (Nilan only)](dashboards.md)
 - [FAQ](faq.md)
 
 ## CTS602 devices (HMI type names)
@@ -34,6 +35,7 @@ Setup guides for each controller / model supported by this integration.
 | VP18cCoB | 28 | [vp18ccob.md](cts602/vp18ccob.md) |
 | COMPACTn | 30 | [compactn.md](cts602/compactn.md) |
 | COMFORTn | 31 | [comfortn.md](cts602/comfortn.md) |
+| VP18 M2 | 32 | [vp18-m2.md](cts602/vp18-m2.md) |
 | COMBI 300 N | 33 | [combi-300-n.md](cts602/combi-300-n.md) |
 | COMBI 302 | 35 | [combi-302.md](cts602/combi-302.md) |
 | COMBI 302 T | 36 | [combi-302-t.md](cts602/combi-302-t.md) |

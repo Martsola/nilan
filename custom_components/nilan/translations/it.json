@@ -202,7 +202,7 @@
                     "2": "Umidità + CO2"
                 }
             },
-            "compressor_heating_priority": {
+            "hot_water_priority": {
                 "name": "Priorità di riscaldamento del compressore",
                 "state": {
                     "0": "Acqua",

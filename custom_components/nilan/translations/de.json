@@ -202,7 +202,7 @@
                     "2": "Luftfeuchtigkeit + CO2"
                 }
             },
-            "compressor_heating_priority": {
+            "hot_water_priority": {
                 "name": "Priorität der Kompressorheizung",
                 "state": {
                     "0": "Wasser",

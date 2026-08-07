@@ -42,7 +42,7 @@ ATTRIBUTE_TO_SELECT = {
     ],
     "get_compressor_priority": [
         Map(
-            "compressor_heating_priority",
+            "hot_water_priority",
             "set_compressor_priority",
             EntityCategory.CONFIG,
             ["0", "1"],

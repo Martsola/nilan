@@ -101,9 +101,8 @@ class Device:
             self._device_type = CTS602_DEVICE_TYPES[hw_type] + " GEO"
         else:
             self._device_type = CTS602_DEVICE_TYPES[hw_type]
-        if (bus_version >= 10) or (self._air_geo_type != 0):
-            co2_present = await self.get_co2_present()
-        else:
+        co2_present = await self.get_co2_present()
+        if co2_present is None:
             co2_present = False
         if self._air_geo_type == 0:
             for entity, value in CTS602_ENTITY_MAP.items():
@@ -747,14 +746,14 @@ class Device:
         return None
 
     async def get_external_heating_offset(self) -> float:
-        """Get external heating offset."""
+        """Get central heating external offset (register 1800)."""
         result = await self._modbus.async_pb_call(
             self._unit_id,
             CTS602HoldingRegisters.central_heat_heat_extern,
             1,
             "holding",
         )
-        if result is not None:
+        if result is not None and len(result.registers) >= 1:
             value = int.from_bytes(
                 result.registers[0].to_bytes(2, "little", signed=False),
                 "little",
@@ -762,6 +761,24 @@ class Device:
             )
             return float(value) / 100
         _LOGGER.error("Could not read get_external_heating_offset")
+        return None
+
+    async def get_room_temperature_neutral_zone(self) -> float:
+        """Get room temperature neutral zone (register 4011)."""
+        result = await self._modbus.async_pb_call(
+            self._unit_id,
+            CTS602HoldingRegisters.air_temp_room_nz,
+            1,
+            "holding",
+        )
+        if result is not None and len(result.registers) >= 1:
+            value = int.from_bytes(
+                result.registers[0].to_bytes(2, "little", signed=False),
+                "little",
+                signed=True,
+            )
+            return float(value) / 100
+        _LOGGER.error("Could not read get_room_temperature_neutral_zone")
         return None
 
     async def get_t0_controller_temperature(self) -> float:
@@ -2096,7 +2113,7 @@ class Device:
             1,
             "input",
         )
-        if result is not None:
+        if result is not None and len(result.registers) >= 1:
             value = int.from_bytes(
                 result.registers[0].to_bytes(2, "little", signed=False),
                 "little",
@@ -2674,7 +2691,7 @@ class Device:
         result = await self._modbus.async_pb_call(
             self._unit_id, CTS602InputRegisters.air_qual_co2_enable, 1, "input"
         )
-        if result is not None:
+        if result is not None and len(result.registers) >= 1:
             value = int.from_bytes(
                 result.registers[0].to_bytes(2, "little", signed=False),
                 "little",
@@ -2781,7 +2798,7 @@ class Device:
         result = await self._modbus.async_pb_call(
             self._unit_id, CTS602HoldingRegisters.time_second, 6, "holding"
         )
-        if result is not None:
+        if result is not None and len(result.registers) >= 6:
             times = [
                 int.from_bytes(
                     x.to_bytes(2, "little", signed=False),
@@ -3506,8 +3523,8 @@ class Device:
             )
 
     async def set_external_heating_offset(self, value: float):
-        """Set external heating offset."""
-        if value >= 0 and value <= 10:
+        """Set central heating external offset (register 1800)."""
+        if value >= -10 and value <= 10:
             value = int(value * 100)
             output = int.from_bytes(
                 value.to_bytes(2, "little", signed=True), "little", signed=False
@@ -3515,6 +3532,20 @@ class Device:
             await self._modbus.async_pb_call(
                 self._unit_id,
                 CTS602HoldingRegisters.central_heat_heat_extern,
+                [output],
+                "write_registers",
+            )
+
+    async def set_room_temperature_neutral_zone(self, value: float):
+        """Set room temperature neutral zone (register 4011)."""
+        if value >= -10 and value <= 10:
+            value = int(value * 100)
+            output = int.from_bytes(
+                value.to_bytes(2, "little", signed=True), "little", signed=False
+            )
+            await self._modbus.async_pb_call(
+                self._unit_id,
+                CTS602HoldingRegisters.air_temp_room_nz,
                 [output],
                 "write_registers",
             )

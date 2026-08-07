@@ -4,15 +4,30 @@
 
 Modbus TCP/RTU integration for Nilan ventilation and Compact units in Home Assistant.
 
-[Docs](docs/README.md) · [Contributing](CONTRIBUTING.md) · [License](LICENSE)
+[Docs](docs/README.md) · [Installation](docs/installation.md) · [Dashboards](docs/dashboards.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Accessibility](ACCESSIBILITY.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [License](LICENSE)
+
+## Vision (this fork)
+
+Ship CTS700 Compact P MVP beside stable CTS602, fix community-reported CTS602 bugs, and keep shared Lovelace **Nilan-only**. GEO / slave 4 and old CTS700 maps stay out of scope until dumps exist.
 
 ## Quick start
 
-1. Install via [HACS](docs/installation.md) or copy `custom_components/nilan` into Home Assistant.
-2. Add **Nilan** → **TCP** or **Serial** → board **CTS602** or **CTS700**.
-3. Set unit id: CTS602 often **30**, Compact P CTS700 often **1** (port **502**).
+1. Install via [HACS](docs/installation.md) (default upstream, or this fork as a custom repository while testing).
+2. Add **Nilan** → **TCP** or **Serial** → **Auto-detect** (or choose **CTS602** / **CTS700** manually).
+3. Confirm the detected board and unit id, or override manually.
+4. Typical unit ids: CTS602 **30**, Compact P CTS700 **1** (TCP port **502**).
 
-Fork for CTS700 work: https://github.com/master3395/veista-nilan (`master`)
+### Install from this fork (HACS custom repository)
+
+Until CTS700 and related fixes are merged upstream:
+
+1. HACS → three-dot menu → **Custom repositories**
+2. URL: `https://github.com/master3395/veista-nilan`
+3. Category: **Integration**
+4. Download **Nilan** → restart Home Assistant
+5. If you already had veista/nilan installed, remove the old integration entry first (same domain)
+
+Fork: https://github.com/master3395/veista-nilan (`master`)
 
 ## Controllers
 
@@ -21,7 +36,7 @@ Fork for CTS700 work: https://github.com/master3395/veista-nilan (`master`)
 | CTS602 | Stable | [docs/cts602](docs/cts602/README.md) |
 | CTS700 | MVP | [docs/cts700](docs/cts700/README.md) |
 
-Shared: [Hardware](docs/hardware.md) · [Installation](docs/installation.md) · [FAQ](docs/faq.md)
+Shared: [Hardware](docs/hardware.md) · [Installation](docs/installation.md) · [Dashboards](docs/dashboards.md) · [FAQ](docs/faq.md)
 
 ## CTS602 models
 
@@ -42,6 +57,7 @@ Shared: [Hardware](docs/hardware.md) · [Installation](docs/installation.md) · 
 | VP18cCoB | 28 | [vp18ccob](docs/cts602/vp18ccob.md) |
 | COMPACTn | 30 | [compactn](docs/cts602/compactn.md) |
 | COMFORTn | 31 | [comfortn](docs/cts602/comfortn.md) |
+| VP18 M2 | 32 | [vp18-m2](docs/cts602/vp18-m2.md) |
 | COMBI 300 N | 33 | [combi-300-n](docs/cts602/combi-300-n.md) |
 | COMBI 302 | 35 | [combi-302](docs/cts602/combi-302.md) |
 | COMBI 302 T | 36 | [combi-302-t](docs/cts602/combi-302-t.md) |

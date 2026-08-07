@@ -6,8 +6,8 @@ Stable support for Nilan units with the **CTS602** controller board.
 
 1. Connect via Modbus TCP bridge or USB-RS485 (see [hardware](../hardware.md)).
 2. Install the integration ([installation](../installation.md)).
-3. Choose interface **TCP** or **Serial**, then board **CTS602**.
-4. Default unit id: **30** (confirm on your unit).
+3. Choose interface **TCP** or **Serial**, then **Auto-detect** or board **CTS602**.
+4. Default unit id: **30** (confirm on your unit; auto-detect may try **1** then **30**).
 5. During validation the integration reads the CTS602 control type register and matches it to a known HMI device name.
 
 ## Device guides

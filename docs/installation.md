@@ -1,27 +1,30 @@
 # Installation
 
-## HACS
+## HACS (upstream / default store)
 
 1. Install **Nilan** from HACS (default repository for the upstream release).
 2. Restart Home Assistant.
 3. Settings → Devices & services → Add integration → **Nilan**.
 4. Choose **TCP** or **Serial**.
-5. Choose board type: **CTS602** or **CTS700 (Compact P MVP)**.
-6. Enter host, port, and unit id (see device docs).
+5. Choose **Auto-detect**, or board type **CTS602** / **CTS700 (Compact P MVP)** manually.
+6. Enter host, port, and unit id (see device docs). For auto-detect you may leave unit id empty (tries **1** then **30**).
+
+## HACS (this fork, custom repository)
+
+Use while testing CTS700 MVP and fork fixes before upstream merge:
+
+1. HACS → three-dot menu → **Custom repositories**
+2. Repository: `https://github.com/master3395/veista-nilan`
+3. Category: **Integration**
+4. Find **Nilan** → Download → restart Home Assistant
+5. Add the integration as above
+6. If an older veista/nilan install exists, remove its config entry first (same `nilan` domain)
 
 ## Manual
 
 1. Copy `custom_components/nilan` into your Home Assistant `custom_components` folder.
 2. Restart Home Assistant.
 3. Add the integration as above.
-
-## Fork testing (CTS700 MVP)
-
-While validating Compact P support on this fork:
-
-- Repository: https://github.com/master3395/veista-nilan
-- Branch: `master`
-- Copy `custom_components/nilan` from `master`, or add the fork as a custom HACS repository during testing
 
 ## Defaults
 
@@ -30,4 +33,8 @@ While validating Compact P support on this fork:
 | CTS602 | 502 (TCP) | 30 |
 | CTS700 Compact P | 502 | 1 |
 
-See [hardware.md](hardware.md) and the guide for your model under [README.md](README.md).
+## Dashboards
+
+Optional Nilan-only Lovelace examples: [dashboards.md](dashboards.md).
+
+See [hardware.md](hardware.md) and the guide for your model under [README.md](../README.md).

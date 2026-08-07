@@ -1,0 +1,50 @@
+name: Unsupported device / register dump
+description: Request support for a Nilan model or share a Modbus dump
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when install fails with unsupported device, or when adding CTS700 / CTS602 coverage.
+        Never paste real LAN IPs (use `192.168.1.50`). Never paste installer passwords.
+  - type: input
+    id: plate
+    attributes:
+      label: Device plate / model
+    validations:
+      required: true
+  - type: input
+    id: type_id
+    attributes:
+      label: CTS602 type id (if known)
+      description: From debug log "Device Type X" or HMI SHOW DATA -> TYPE.
+  - type: dropdown
+    id: board
+    attributes:
+      label: Board
+      options:
+        - CTS602
+        - CTS700
+        - Unknown
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware / software version
+  - type: input
+    id: unit_id
+    attributes:
+      label: Modbus unit id
+      placeholder: "1 or 30"
+  - type: textarea
+    id: dump
+    attributes:
+      label: Register dump or Modbus YAML
+      description: Relevant registers and what they mean on your unit.
+      render: yaml
+  - type: textarea
+    id: photos
+    attributes:
+      label: Photos
+      description: Describe or attach plate / HMI type photos (no personal home details).

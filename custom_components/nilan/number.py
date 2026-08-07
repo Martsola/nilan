@@ -153,10 +153,23 @@ ATTRIBUTE_TO_NUMBERS = {
     ],
     "get_external_heating_offset": [
         Map(
-            "room_temperature_neutral_zone",
+            "central_heating_external_offset",
             "set_external_heating_offset",
             EntityCategory.CONFIG,
-            0,
+            -10,
+            10,
+            1,
+            NumberMode.BOX,
+            UnitOfTemperature.CELSIUS,
+            "mdi:thermometer-lines",
+        )
+    ],
+    "get_room_temperature_neutral_zone": [
+        Map(
+            "room_temperature_neutral_zone",
+            "set_room_temperature_neutral_zone",
+            EntityCategory.CONFIG,
+            -10,
             10,
             1,
             NumberMode.BOX,

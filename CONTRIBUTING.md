@@ -2,6 +2,12 @@
 
 Thank you for helping improve the Nilan Home Assistant integration.
 
+Please also read:
+
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
+- [Accessibility](ACCESSIBILITY.md)
+
 ## Branch targets (this fork)
 
 Working fork: https://github.com/master3395/veista-nilan
@@ -9,8 +15,15 @@ Working fork: https://github.com/master3395/veista-nilan
 - Day-to-day CTS700 Compact P work lives on fork **`master`**
 - Upstream project: https://github.com/veista/nilan
 - Open a pull request to `veista/nilan` only when the change is ready and tested
+- Prefer public issues/PRs for non-security topics; use private vulnerability reporting for security
 
 Do not open drive-by PRs against unrelated branches.
+
+### Maintainer expectations (fork)
+
+- Default branch should stay protected with required CI checks when collaborators are added
+- Accounts with write access should use MFA
+- Keep shared Lovelace under `dashboards/` **Nilan-only**
 
 ## Before you open an issue
 

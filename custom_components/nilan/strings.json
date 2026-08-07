@@ -11,6 +11,7 @@
       "board": {
         "title": "Select Controller Board",
         "menu_options": {
+          "auto_detect": "Auto-detect",
           "cts602": "CTS602",
           "cts700": "CTS700 (Compact P MVP)"
         }
@@ -31,6 +32,32 @@
           "host_ip": "IP Address",
           "host_port": "Port",
           "unit_id": "Unit ID"
+        }
+      },
+      "tcp_detect": {
+        "title": "TCP Auto-detect",
+        "description": "Leave Unit ID empty to try 1 then 30.",
+        "data": {
+          "name": "Device Name",
+          "host_ip": "IP Address",
+          "host_port": "Port",
+          "unit_id": "Unit ID (optional)"
+        }
+      },
+      "serial_detect": {
+        "title": "Serial Auto-detect",
+        "description": "Leave Unit ID empty to try 1 then 30.",
+        "data": {
+          "name": "Device Name",
+          "host_port": "Path",
+          "unit_id": "Unit ID (optional)"
+        }
+      },
+      "confirm": {
+        "title": "Confirm detected Nilan",
+        "description": "Detected board: {board_type}. Model: {model}. Unit ID: {unit_id}. Choose accept to create the entry, or manual to pick CTS602/CTS700 yourself.",
+        "data": {
+          "action": "Action (accept or manual)"
         }
       },
       "serial": {
@@ -54,6 +81,7 @@
       "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
       "invalid_response": "[%key:common::config_flow::error::invalid_response%]",
       "unsupported_device": "[%key:common::config_flow::error::invalid_device%]",
+      "cannot_detect": "Could not detect CTS602 or CTS700. Check host, port, and unit id, or choose the board manually.",
       "unknown": "[%key:common::config_flow::error::unknown%]"
     },
     "abort": {
@@ -167,6 +195,7 @@
       "maximum_supply_air_temperature_in_summer": {"name": "Maximum Supply Air Temperature in Summer"},
       "maximum_supply_air_temperature_in_winter": {"name": "Maximum Supply Air Temperature in Winter"},
       "room_temperature_neutral_zone": {"name": "Room Temperature Neutral Zone"},
+      "central_heating_external_offset": {"name": "Central Heating External Offset"},
       "change_to_summer_state_setpoint": {"name": "Change to Summer State Setpoint"},
       "supply_fan_power_at_level_1": {"name": "Supply Fan Power at Level 1"},
       "supply_fan_power_at_level_2": {"name": "Supply Fan Power at Level 2"},
@@ -233,11 +262,11 @@
                 "2": "Humidity + CO2"
             }
         },
-        "compressor_heating_priority": {
-            "name": "Compressor Heating Priority",
+        "hot_water_priority": {
+            "name": "Hot Water Priority",
             "state": {
                 "0": "Water",
-                "1": "Air"
+                "1": "Inlet"
             }
         },
         "cooling_mode_ventilation_level": {

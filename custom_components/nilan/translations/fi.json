@@ -207,7 +207,7 @@
                     "2": "Kosteus + Hiilidioksidi"
                 }
             },
-            "compressor_heating_priority": {
+            "hot_water_priority": {
                 "name": "Kompressorin Lämmitysprioriteetti",
                 "state": {
                     "0": "Vesi",
