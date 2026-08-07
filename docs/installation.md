@@ -6,7 +6,7 @@
 2. Restart Home Assistant.
 3. Settings → Devices & services → Add integration → **Nilan**.
 4. Choose **TCP** or **Serial**.
-5. Choose **Auto-detect**, or board type **CTS602** / **CTS700 (Compact P MVP)** manually.
+5. Choose **Auto-detect**, or board type **CTS602** / **CTS700 (2018+)** / **CTS700 (2015 legacy)** manually.
 6. Enter host, port, and unit id (see device docs). For auto-detect you may leave unit id empty (tries **1** then **30**).
 
 ## HACS (this fork, custom repository)

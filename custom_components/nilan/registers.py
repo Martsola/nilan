@@ -656,3 +656,42 @@ class CTS700NewHoldingRegisters:
 
     # Compact P fan speed percent 0-100 (not discrete 0-4; not in Dec 2023 list).
     fan_speed = 21771
+
+
+class CTS700LegacyHoldingRegisters:
+    """CTS700 holding registers from Nilan Modbus PDF dated 20150826.
+
+    Older firmware uses addresses mostly under 10000. Temperatures use scale 0.1
+    (example: 245 = 24.5 C). Humidity and fan percent are unscaled 0-100.
+
+    Sensor roles follow common Compact P labeling (T1 outdoor … T6 evaporator).
+    DHW tank top/bottom are not uniquely named in that PDF, so tank current
+    sensors are omitted from the legacy MVP entity map.
+    """
+
+    # Installer / filter (user-accessible counters)
+    filter_inlet_time_threshold = 1326
+    filter_exhaust_time_threshold = 1327
+    filter_inlet_pass_days = 1328
+    filter_exhaust_pass_days = 1329
+
+    # User operation
+    system_working_mode = 1047
+    operation_type = 2402  # 0 auto, 1 cooling, 2 heating (PDF)
+    pause_mode = 4727  # 0 none, 1 vent, 2 DHW, 3 all
+    user_temperature = 4746
+    user_fan_speed = 4747
+    user_temp_dhw = 5548
+
+    # Sensors
+    humidity = 4716
+    master_sensor_temperature = 5088
+    tsens1 = 5152
+    tsens2 = 5153
+    tsens3 = 5154
+    tsens4 = 5155
+    tsens5 = 5156
+    tsens6 = 5157
+
+    heater_control = 4701
+    software_version = 5065

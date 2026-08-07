@@ -9,11 +9,16 @@ Different controller boards, register maps, and typical unit ids.
 
 ## Can the integration auto-detect my board?
 
-Yes. After TCP or Serial, choose **Auto-detect**. The flow probes CTS602 `control_type` (1000), then CTS700 outdoor temperature registers, using unit id **1** then **30** if you leave unit id empty. Confirm the result before the entry is created. You can still pick CTS602 or CTS700 manually.
+Yes. After TCP or Serial, choose **Auto-detect**. The flow probes CTS602 `control_type` (1000), then CTS700 2018+ outdoor temp (20282), then CTS700 2015 T1+setpoint (5152 / 4746), using unit id **1** then **30** if you leave unit id empty. Confirm the result before the entry is created. You can still pick CTS602, CTS700 2018+, or CTS700 2015 manually.
 
 ## Why can the CTS700 PDF disagree with live values?
 
-Firmware eras differ (old maps under 10000 vs newer 20xxx). Compact P live installs may also disagree with some PDF labels. Prefer live-verified registers in [cts700/compact-p.md](cts700/compact-p.md).
+Firmware eras differ:
+
+- **2015 map** (PDF 20150826): registers mostly under 10000 (setpoint 4746, T1 5152, …). Use board **CTS700 (2015 legacy map)**. Guide: [cts700/legacy-2015.md](cts700/legacy-2015.md).
+- **2018+ / Compact P map**: 20xxx registers. Use board **CTS700 (2018+ / Compact P)**. Guide: [cts700/compact-p.md](cts700/compact-p.md).
+
+Compact P live installs may also disagree with some PDF labels. Prefer live-verified tables in those guides.
 
 ## Unsupported device on CTS602?
 

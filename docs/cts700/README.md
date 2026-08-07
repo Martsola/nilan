@@ -1,28 +1,33 @@
 # CTS700
 
-MVP / experimental support for Nilan **CTS700** controllers.
+Support for Nilan **CTS700** controllers over Modbus (Ethernet TCP or Serial).
 
-## Current scope
+## Maps
 
-- Primary target: **Compact P** over Ethernet Modbus TCP
+| Map | Board choice in HA | Typical registers | Guide |
+|---|---|---|---|
+| **2018+** Compact P | CTS700 (2018+ / Compact P) | 20xxx (e.g. 20102, 20282, 21771) | [compact-p.md](compact-p.md) |
+| **2015** legacy | CTS700 (2015 legacy map) | under 10000 (e.g. 4746, 5152, 5548) | [legacy-2015.md](legacy-2015.md) |
+
+Auto-detect probes CTS602, then 2018+ CTS700, then 2015 CTS700.
+
+## Connection defaults
+
 - Indoor unit id: typically **1**
-- Port: **502**
-- Native LAN: Cat5e (or better) from CTS700 LAN to router; no RS485 bridge required
-
-## Device guides
-
-| Model | Guide |
-|---|---|
-| Compact P | [compact-p.md](compact-p.md) |
+- TCP port: **502**
+- Native LAN: Cat5e (or better) from CTS700 LAN to router; no RS485 bridge required for Ethernet
 
 ## Status
 
-MVP live-checked on Compact P Ethernet (04/08/2026). Details and register notes: [compact-p.md](compact-p.md). Current integration version: **1.3.1**.
+- **2018+ Compact P:** live-checked (04/08/2026). See [compact-p.md](compact-p.md).
+- **2015 legacy:** MVP from the 20150826 PDF; needs community dumps to refine sensor naming and DHW tank currents.
 
-## Out of MVP (for now)
+Current integration version: **1.3.3**.
 
-- Old CTS700 firmware maps (registers under 10000)
+## Still out of scope
+
 - Full GEO / floor slave 4 feature set
 - Full feature parity with CTS602 (alarms, week programs, all selects)
+- Installer auth at register 7777
 
 Help wanted: register dumps and entity pass/fail reports. See [CONTRIBUTING.md](../../CONTRIBUTING.md) and issue [#19](https://github.com/veista/nilan/issues/19).

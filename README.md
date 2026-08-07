@@ -8,14 +8,16 @@ Modbus TCP/RTU integration for Nilan ventilation and Compact units in Home Assis
 
 ## Vision (this fork)
 
-Ship CTS700 Compact P MVP beside stable CTS602, fix community-reported CTS602 bugs, and keep shared Lovelace **Nilan-only**. GEO / slave 4 and old CTS700 maps stay out of scope until dumps exist.
+Ship CTS700 Compact P MVP (2018+ map) and CTS700 2015 legacy map beside stable CTS602, fix community-reported CTS602 bugs, and keep shared Lovelace **Nilan-only**. GEO / slave 4 stays out of scope until dumps exist.
 
 ## Quick start
 
 1. Install via [HACS](docs/installation.md) (default upstream, or this fork as a custom repository while testing).
-2. Add **Nilan** → **TCP** or **Serial** → **Auto-detect** (or choose **CTS602** / **CTS700** manually).
+2. Add **Nilan** → **TCP** or **Serial** → **Auto-detect** (or choose **CTS602** / **CTS700 2018+** / **CTS700 2015** manually).
 3. Confirm the detected board and unit id, or override manually.
 4. Typical unit ids: CTS602 **30**, Compact P CTS700 **1** (TCP port **502**).
+
+**CTS700 maps:** modern Compact P uses the **2018+** 20xxx map ([compact-p](docs/cts700/compact-p.md)). Older firmware uses the **2015** map under 10000 ([legacy-2015](docs/cts700/legacy-2015.md)).
 
 ### Install from this fork (HACS custom repository)
 
@@ -67,11 +69,12 @@ Shared: [Hardware](docs/hardware.md) · [Installation](docs/installation.md) · 
 
 ## CTS700 models
 
-| Model | Guide |
+| Model / map | Guide |
 |---|---|
-| Compact P (Ethernet Modbus TCP) | [compact-p](docs/cts700/compact-p.md) |
+| Compact P (2018+ Ethernet map) | [compact-p](docs/cts700/compact-p.md) |
+| CTS700 2015 legacy map | [legacy-2015](docs/cts700/legacy-2015.md) |
 
-MVP covers room climate, fan, temps, humidity, and DHW. Not full CTS700 family support yet. Do not use register **20260** as room current on Compact P. Details: [Compact P guide](docs/cts700/compact-p.md). Tracking: [veista/nilan#19](https://github.com/veista/nilan/issues/19).
+MVP covers room climate, fan, temps, humidity, and DHW setpoint. Not full CTS700 family support yet. On 2018+ Compact P, do not use register **20260** as room current. Tracking: [veista/nilan#19](https://github.com/veista/nilan/issues/19).
 
 ## Support
 

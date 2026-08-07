@@ -2,18 +2,25 @@
 
 from __future__ import annotations
 
-import logging
 from typing import Any, Optional
 
-from pymodbus.client import AsyncModbusSerialClient, AsyncModbusTcpClient
-from pymodbus.exceptions import ModbusException
 import voluptuous as vol
 
 from homeassistant import config_entries
 
-from .const import BOARD_TYPE_CTS602, BOARD_TYPE_CTS700, DOMAIN
-from .device_map import CTS602_DEVICE_TYPES
-from .registers import CTS602HoldingRegisters, CTS700NewHoldingRegisters
+from .const import (
+    BOARD_TYPE_CTS602,
+    BOARD_TYPE_CTS700,
+    BOARD_TYPE_CTS700_LEGACY,
+    DOMAIN,
+)
+from .modbus_probe import (
+    async_detect_board,
+    async_validate_cts602,
+    async_validate_cts700,
+    async_validate_cts700_legacy,
+    is_cts700_schema_board,
+)
 
 STEP_TCP_CTS602_SCHEMA = vol.Schema(
     {
@@ -66,143 +73,6 @@ STEP_SERIAL_DETECT_SCHEMA = vol.Schema(
     }
 )
 
-# Scaled CTS700 temps (register / 10). Plausible outdoor/extract band.
-_CTS700_TEMP_MIN = -40.0
-_CTS700_TEMP_MAX = 80.0
-
-_LOGGER = logging.getLogger(__name__)
-
-
-def _holding_u16(registers: list) -> int | None:
-    """Decode first holding register as unsigned little-endian."""
-    if not registers:
-        return None
-    return int.from_bytes(
-        registers[0].to_bytes(2, "little", signed=False),
-        "little",
-        signed=False,
-    )
-
-
-def _holding_s16_temp(registers: list) -> float | None:
-    """Decode first holding register as signed temp with 0.1 scale."""
-    if not registers:
-        return None
-    raw = int.from_bytes(
-        registers[0].to_bytes(2, "little", signed=False),
-        "little",
-        signed=True,
-    )
-    return float(raw) / 10.0
-
-
-async def _open_client(com_type: str, port, address: str | None):
-    """Create and connect a Modbus client."""
-    if com_type == "tcp":
-        client = AsyncModbusTcpClient(address, port=port)
-    else:
-        client = AsyncModbusSerialClient(
-            port=port,
-            stopbits=1,
-            bytesize=8,
-            parity="E",
-            baudrate=19200,
-            timeout=1,
-        )
-    await client.connect()
-    return client
-
-
-async def async_validate_cts602(com_type, port, unit_id, address: str | None) -> int:
-    """Validate CTS602 device model. Returns type id."""
-    client = await _open_client(com_type, port, address)
-    try:
-        result = await client.read_holding_registers(
-            CTS602HoldingRegisters.control_type, count=1, device_id=int(unit_id)
-        )
-    except ModbusException as value_error:
-        client.close()
-        raise ValueError("cannot_connect") from value_error
-    if hasattr(result, "message"):
-        client.close()
-        raise ValueError("invalid_response")
-    if result is None or len(result.registers) == 0:
-        client.close()
-        raise ValueError("invalid_response")
-    value_output = _holding_u16(result.registers)
-    client.close()
-    if value_output is None or value_output not in CTS602_DEVICE_TYPES:
-        _LOGGER.debug(
-            "Device Type %s not found in supported devices list",
-            str(value_output),
-        )
-        raise ValueError("unsupported_device")
-    return value_output
-
-
-async def async_validate_cts700(com_type, port, unit_id, address: str | None) -> None:
-    """Validate CTS700 by probing outdoor temperature register."""
-    client = await _open_client(com_type, port, address)
-    try:
-        result = await client.read_holding_registers(
-            CTS700NewHoldingRegisters.t1_outdoor_air_temperature,
-            count=1,
-            device_id=int(unit_id),
-        )
-    except ModbusException as value_error:
-        client.close()
-        raise ValueError("cannot_connect") from value_error
-    if hasattr(result, "message"):
-        client.close()
-        raise ValueError("invalid_response")
-    if result is None or len(result.registers) == 0:
-        client.close()
-        raise ValueError("invalid_response")
-    temp = _holding_s16_temp(result.registers)
-    client.close()
-    if temp is None or temp < _CTS700_TEMP_MIN or temp > _CTS700_TEMP_MAX:
-        raise ValueError("invalid_response")
-
-
-async def async_detect_board(
-    com_type: str, port, address: str | None, unit_id: int | None
-) -> dict[str, Any]:
-    """Probe CTS602 then CTS700. Returns board_type, unit_id, model."""
-    candidates: list[int] = []
-    if unit_id is not None:
-        candidates.append(int(unit_id))
-    for default_id in (1, 30):
-        if default_id not in candidates:
-            candidates.append(default_id)
-
-    last_error = "cannot_detect"
-    for candidate in candidates:
-        try:
-            type_id = await async_validate_cts602(com_type, port, candidate, address)
-            return {
-                "board_type": BOARD_TYPE_CTS602,
-                "unit_id": candidate,
-                "model": CTS602_DEVICE_TYPES[type_id],
-                "type_id": type_id,
-            }
-        except ValueError as err:
-            last_error = str(err)
-            _LOGGER.debug("CTS602 probe unit_id=%s failed: %s", candidate, err)
-
-        try:
-            await async_validate_cts700(com_type, port, candidate, address)
-            return {
-                "board_type": BOARD_TYPE_CTS700,
-                "unit_id": candidate,
-                "model": "Compact P CTS700",
-                "type_id": None,
-            }
-        except ValueError as err:
-            last_error = str(err)
-            _LOGGER.debug("CTS700 probe unit_id=%s failed: %s", candidate, err)
-
-    raise ValueError(last_error if last_error else "cannot_detect")
-
 
 class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Nilan Modbus."""
@@ -240,10 +110,10 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self.async_step_board()
 
     async def async_step_board(self, user_input: Optional[dict[str, Any]] = None):
-        """Choose auto-detect, CTS602, or CTS700."""
+        """Choose auto-detect, CTS602, or CTS700 map."""
         return self.async_show_menu(
             step_id="board",
-            menu_options=["auto_detect", "cts602", "cts700"],
+            menu_options=["auto_detect", "cts602", "cts700", "cts700_legacy"],
         )
 
     async def async_step_auto_detect(self, user_input: Optional[dict[str, Any]] = None):
@@ -367,8 +237,17 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self.async_step_tcp_config()
 
     async def async_step_cts700(self, user_input: Optional[dict[str, Any]] = None):
-        """CTS700 selected; continue to connection form."""
+        """CTS700 2018+ map selected; continue to connection form."""
         self._board_type = BOARD_TYPE_CTS700
+        if self._com_type == "serial":
+            return await self.async_step_serial_config()
+        return await self.async_step_tcp_config()
+
+    async def async_step_cts700_legacy(
+        self, user_input: Optional[dict[str, Any]] = None
+    ):
+        """CTS700 2015 map selected; continue to connection form."""
+        self._board_type = BOARD_TYPE_CTS700_LEGACY
         if self._com_type == "serial":
             return await self.async_step_serial_config()
         return await self.async_step_tcp_config()
@@ -379,7 +258,7 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         board = self._board_type or BOARD_TYPE_CTS602
         schema = (
             STEP_TCP_CTS700_SCHEMA
-            if board == BOARD_TYPE_CTS700
+            if is_cts700_schema_board(board)
             else STEP_TCP_CTS602_SCHEMA
         )
 
@@ -387,6 +266,13 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 if board == BOARD_TYPE_CTS700:
                     await async_validate_cts700(
+                        "tcp",
+                        user_input["host_port"],
+                        user_input["unit_id"],
+                        user_input["host_ip"],
+                    )
+                elif board == BOARD_TYPE_CTS700_LEGACY:
+                    await async_validate_cts700_legacy(
                         "tcp",
                         user_input["host_port"],
                         user_input["unit_id"],
@@ -418,7 +304,7 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         board = self._board_type or BOARD_TYPE_CTS602
         schema = (
             STEP_SERIAL_CTS700_SCHEMA
-            if board == BOARD_TYPE_CTS700
+            if is_cts700_schema_board(board)
             else STEP_SERIAL_CTS602_SCHEMA
         )
 
@@ -426,6 +312,10 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 if board == BOARD_TYPE_CTS700:
                     await async_validate_cts700(
+                        "serial", user_input["host_port"], user_input["unit_id"], None
+                    )
+                elif board == BOARD_TYPE_CTS700_LEGACY:
+                    await async_validate_cts700_legacy(
                         "serial", user_input["host_port"], user_input["unit_id"], None
                     )
                 else:

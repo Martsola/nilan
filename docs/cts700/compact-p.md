@@ -73,7 +73,8 @@ Fixes from that pass (v1.3.1): climate HVAC mode no longer stuck on `unknown` fo
 
 ## Not this guide
 
-If your Compact P uses a **CTS602** HMI / board (type id 44), use [../cts602/compactp.md](../cts602/compactp.md) instead.
+- Older CTS700 firmware with registers under 10000: use [legacy-2015.md](legacy-2015.md).
+- Compact P with a **CTS602** HMI / board (type id 44): use [../cts602/compactp.md](../cts602/compactp.md).
 
 ## Related
 

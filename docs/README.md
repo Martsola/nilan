@@ -7,7 +7,7 @@ Setup guides for each controller / model supported by this integration.
 | Controller | Status | Docs |
 |---|---|---|
 | [CTS602](cts602/README.md) | Stable | Full device list below |
-| [CTS700](cts700/README.md) | MVP (Compact P) | Ethernet Modbus TCP |
+| [CTS700](cts700/README.md) | MVP (2018+ and 2015 maps) | [compact-p](cts700/compact-p.md) · [legacy-2015](cts700/legacy-2015.md) |
 
 ## Shared topics
 
@@ -45,9 +45,10 @@ Setup guides for each controller / model supported by this integration.
 
 ## CTS700 devices
 
-| Model | Guide |
+| Model / map | Guide |
 |---|---|
-| Compact P (Ethernet) | [compact-p.md](cts700/compact-p.md) |
+| Compact P (2018+ Ethernet) | [compact-p.md](cts700/compact-p.md) |
+| CTS700 2015 legacy | [legacy-2015.md](cts700/legacy-2015.md) |
 
 ## Contributing and license
 
