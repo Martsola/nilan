@@ -1,4 +1,8 @@
-"""CTS700 Compact P Nordic XL hybrid entity map (full community parity)."""
+"""CTS700 Compact P Køl Polar/Nordic/Arctic (XL) hybrid entity map.
+
+Aligned with mark007 Modbus YAML + Nilan CTS700 LC Board v4.0 wiring
+(T1–T12 physical sensors on Compact P Køl Polar/Nordic/Arctic XL).
+"""
 
 CTS700_NORDIC_ENTITY_MAP = {
     "get_run_state": {"entity_type": "config"},
@@ -13,7 +17,9 @@ CTS700_NORDIC_ENTITY_MAP = {
     "get_t4_outlet": {"entity_type": "sensor"},
     "get_t5_condenser_temperature": {"entity_type": "sensor"},
     "get_t6_evaporator_temperature": {"entity_type": "sensor"},
+    "get_t7_inlet_temperature_after_heater": {"entity_type": "sensor"},
     "get_t8_outdoor_temperature": {"entity_type": "sensor"},
+    "get_t9_heater_temperature": {"entity_type": "sensor"},
     "get_humidity": {"entity_type": "sensor"},
     "get_average_humidity": {"entity_type": "sensor"},
     "get_days_to_air_filter_change": {"entity_type": "sensor"},

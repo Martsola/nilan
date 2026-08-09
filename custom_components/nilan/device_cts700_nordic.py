@@ -1,4 +1,7 @@
-"""Nilan CTS700 Compact P Nordic XL hybrid device.
+"""Nilan CTS700 Compact P Køl Polar/Nordic/Arctic (XL) hybrid device.
+
+Hardware: CTS700 LC Board (e.g. v4.0 / NCS-700), product family
+Compact P Køl Polar/Nordic/Arctic (XL), varenr 75124xx.
 
 Fan writes use holding 4747 with values 101-104. Do not mix with CTS700 2018+
 (21771 percent) or CTS700 2015 legacy (4747 percent).
@@ -43,7 +46,7 @@ class DeviceCTS700Nordic:
         """Create Nordic hybrid device."""
         self.hass = hass
         self._device_name = name
-        self._device_type = "Compact P Nordic XL CTS700"
+        self._device_type = "Compact P Køl Polar/Nordic/Arctic XL CTS700"
         self._device_sw_ver = ""
         self._device_hw_ver = "CTS700"
         self._host_ip = host_ip
@@ -326,12 +329,20 @@ class DeviceCTS700Nordic:
         return await self._read_temp_holding(Reg.t5_condenser)
 
     async def get_t6_evaporator_temperature(self) -> float | None:
-        """Evaporator temperature."""
+        """Evaporator temperature (T6)."""
         return await self._read_temp_holding(Reg.t6_evaporator)
 
+    async def get_t7_inlet_temperature_after_heater(self) -> float | None:
+        """Supply air after after-heater (T7, holding 20294)."""
+        return await self._read_temp_holding(Reg.t7_after_heater)
+
     async def get_t8_outdoor_temperature(self) -> float | None:
-        """Polar preheater / T8 after pre-heat element."""
+        """Polar/Nordic preheater path / T8 (input 5159)."""
         return await self._read_temp_input(Reg.t8_preheater)
+
+    async def get_t9_heater_temperature(self) -> float | None:
+        """Water surface / after heater (T9, holding 20298)."""
+        return await self._read_temp_holding(Reg.t9_water_surface)
 
     async def get_humidity(self) -> float | None:
         """Live extract humidity (4716)."""

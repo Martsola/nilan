@@ -7,7 +7,7 @@ Reference / fallback Home Assistant **Modbus** YAML aligned with this fork’s P
 | File | Board | Use when |
 |---|---|---|
 | [`cts700_2015_legacy.yaml`](cts700_2015_legacy.yaml) | `CTS700_LEGACY` | Fan **4747** percent; classic under-10000 map |
-| [`cts700_nordic_xl.yaml`](cts700_nordic_xl.yaml) | `CTS700_NORDIC` | Fan **4747** = **101–104**; mark007 parity |
+| [`cts700_nordic_xl.yaml`](cts700_nordic_xl.yaml) | `CTS700_NORDIC` | Compact P Køl Polar/Nordic/Arctic (XL); fan **4747** = **101–104** |
 | [`cts700_2018_compact_p.yaml`](cts700_2018_compact_p.yaml) | `CTS700` | Fan **21771**; setpoint **20102**; room **20286** |
 | [`cts602_compactp.yaml`](cts602_compactp.yaml) | `CTS602` CompactP (44) | Catalog Compact P XL Nordic / type 44 RS485 (unit 30) |
 

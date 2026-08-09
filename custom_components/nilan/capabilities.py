@@ -109,21 +109,79 @@ MARKETING_ALIASES: Mapping[str, Mapping[str, object]] = {
     "compact p ek": {"hmi": "CompactP or CTS700", "type_id": 44},
     "compact p geo": {"hmi": "CompactP", "type_id": 44},
     "compact p nordic": {"hmi": "CompactP or CTS700", "type_id": 44},
-    "compact p xl nordic": {"hmi": "CompactP", "type_id": 44, "board": "CTS602"},
-    "compact p nordic xl": {"hmi": "CompactP", "type_id": 44, "board": "CTS602"},
-    "compact p xl nordic rf": {
+    # Catalog CTS602 type 44 (RS485) vs CTS700 LC Ethernet hybrids below
+    "compact p xl nordic": {
         "hmi": "CompactP or CTS700_NORDIC",
+        "type_id": 44,
+    },
+    "compact p nordic xl": {
+        "hmi": "CompactP or CTS700_NORDIC",
+        "type_id": 44,
+    },
+    "compact p xl nordic rf": {
+        "hmi": "CTS700_NORDIC",
         "type_id": 44,
     },
     "compact p nordic xl rf": {
-        "hmi": "CompactP or CTS700_NORDIC",
+        "hmi": "CTS700_NORDIC",
         "type_id": 44,
     },
     "nordic xl rf": {
-        "hmi": "CompactP or CTS700_NORDIC",
+        "hmi": "CTS700_NORDIC",
         "type_id": 44,
     },
-    "compact p xl polar": {"hmi": "CompactP", "type_id": 44, "board": "CTS602"},
+    # Nilan wiring / produktliste: Compact P Køl (Sol) Polar/Nordic/Arctic (XL)
+    # CTS700 LC Board Version 4.0, varenr 75124xx, styreprint #237501
+    "compact p køl polar nordic arctic xl": {
+        "hmi": "CTS700_NORDIC",
+        "type_id": None,
+        "board": "CTS700_NORDIC",
+    },
+    "compact p kol polar nordic arctic xl": {
+        "hmi": "CTS700_NORDIC",
+        "type_id": None,
+        "board": "CTS700_NORDIC",
+    },
+    "compact p koel polar nordic arctic xl": {
+        "hmi": "CTS700_NORDIC",
+        "type_id": None,
+        "board": "CTS700_NORDIC",
+    },
+    "compact p polar xl": {
+        "hmi": "CTS700_NORDIC",
+        "type_id": None,
+        "board": "CTS700_NORDIC",
+    },
+    "compact p arctic xl": {
+        "hmi": "CTS700_NORDIC",
+        "type_id": None,
+        "board": "CTS700_NORDIC",
+    },
+    "compact p nordic arctic xl": {
+        "hmi": "CTS700_NORDIC",
+        "type_id": None,
+        "board": "CTS700_NORDIC",
+    },
+    "ncs-700": {
+        "hmi": "CTS700_NORDIC or CTS700",
+        "type_id": None,
+        "board": "CTS700",
+    },
+    "ncs-700 lc board": {
+        "hmi": "CTS700_NORDIC or CTS700",
+        "type_id": None,
+        "board": "CTS700",
+    },
+    "cts700 lc board": {
+        "hmi": "CTS700_NORDIC or CTS700",
+        "type_id": None,
+        "board": "CTS700",
+    },
+    "compact p xl polar": {
+        "hmi": "CTS700_NORDIC",
+        "type_id": None,
+        "board": "CTS700_NORDIC",
+    },
     "vp 18 m2": {"hmi": "VP18 M2", "type_id": 32},
     "vp 18 m2 ek": {"hmi": "VP 18ek", "type_id": 20},
     "vgu 180 ek": {"hmi": "VGU180 ek", "type_id": 38},

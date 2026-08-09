@@ -1,7 +1,16 @@
-# CTS700 Compact P Nordic XL (CTS700_NORDIC)
-# Fan user step: holding 4747 values 101-104. Do not use on 2018+ Compact P.
+# CTS700 Compact P Køl Polar/Nordic/Arctic (XL) — board CTS700_NORDIC
+#
+# Hardware (Nilan wiring / produktliste):
+#   Compact P Køl (Sol) Polar/Nordic/Arctic (XL)
+#   CTS700 LC Board Version 4.0 (styreprint #237501), varenr 75124xx
+#   Native Ethernet Modbus TCP, typical unit id 1
+#
+# Fan user step: holding 4747 values 101-104 (NOT percent).
+# Do NOT use this file on 2018+ Compact P (fan 21771 percent / setpoint 20102).
+#
 # Prefer custom_components/nilan board "CTS700 Compact P Nordic XL".
 # Never run this YAML and the Nilan integration on the same unit.
+# Docs: docs/cts700/compact-p-nordic-xl.md · docs/cts700/hardware/
 
 modbus:
   - name: nilan_cts700_nordic
@@ -29,7 +38,7 @@ modbus:
         address: 4747
         input_type: holding
         data_type: uint16
-        # Expected values: 101, 102, 103, 104
+        # Expected values: 101, 102, 103, 104 (= fan steps 1-4)
 
       - name: Nilan Nordic Live Humidity
         unique_id: nilan_nordic_live_humidity
@@ -51,6 +60,7 @@ modbus:
         device_class: humidity
         state_class: measurement
 
+      # T1–T3 classic inputs (wiring: Udetemp / Tilluft / Fraluft)
       - name: Nilan Nordic T1 Outdoor
         unique_id: nilan_nordic_t1
         slave: 1
@@ -87,42 +97,7 @@ modbus:
         device_class: temperature
         state_class: measurement
 
-      - name: Nilan Nordic T8 Preheater
-        unique_id: nilan_nordic_t8
-        slave: 1
-        address: 5159
-        input_type: input
-        data_type: int16
-        scale: 0.1
-        precision: 1
-        unit_of_measurement: "°C"
-        device_class: temperature
-        state_class: measurement
-
-      - name: Nilan Nordic T11 DHW Top
-        unique_id: nilan_nordic_t11
-        slave: 1
-        address: 5162
-        input_type: input
-        data_type: int16
-        scale: 0.1
-        precision: 1
-        unit_of_measurement: "°C"
-        device_class: temperature
-        state_class: measurement
-
-      - name: Nilan Nordic T12 DHW Bottom
-        unique_id: nilan_nordic_t12
-        slave: 1
-        address: 5163
-        input_type: input
-        data_type: int16
-        scale: 0.1
-        precision: 1
-        unit_of_measurement: "°C"
-        device_class: temperature
-        state_class: measurement
-
+      # T4–T7 / T9 via 20xxx holdings (same Compact P addresses)
       - name: Nilan Nordic T4 After HEX
         unique_id: nilan_nordic_t4
         slave: 1
@@ -159,12 +134,73 @@ modbus:
         device_class: temperature
         state_class: measurement
 
+      - name: Nilan Nordic T7 Supply After Heater
+        unique_id: nilan_nordic_t7
+        slave: 1
+        address: 20294
+        input_type: holding
+        data_type: int16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: Nilan Nordic T8 Preheater
+        unique_id: nilan_nordic_t8
+        slave: 1
+        address: 5159
+        input_type: input
+        data_type: int16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: Nilan Nordic T9 Water Surface
+        unique_id: nilan_nordic_t9
+        slave: 1
+        address: 20298
+        input_type: holding
+        data_type: int16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: Nilan Nordic T11 DHW Top
+        unique_id: nilan_nordic_t11
+        slave: 1
+        address: 5162
+        input_type: input
+        data_type: int16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: Nilan Nordic T12 DHW Bottom
+        unique_id: nilan_nordic_t12
+        slave: 1
+        address: 5163
+        input_type: input
+        data_type: int16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
       - name: Nilan Nordic Op Mode
         unique_id: nilan_nordic_op_mode
         slave: 1
         address: 5432
         input_type: holding
         data_type: uint16
+        # 0 off, 1 cool, 2 heat, 3 dehum, 4 DHW
 
       - name: Nilan Nordic Filter Days
         unique_id: nilan_nordic_filter_days
@@ -240,6 +276,21 @@ modbus:
         target_temp_register: 4746
         target_temp_register_type: holding
         max_temp: 30
+        min_temp: 5
+        temp_step: 0.5
+        temperature_unit: C
+
+      - name: Nilan Nordic DHW
+        unique_id: nilan_nordic_dhw_climate
+        slave: 1
+        address: 5162
+        input_type: input
+        data_type: int16
+        scale: 0.1
+        precision: 1
+        target_temp_register: 20460
+        target_temp_register_type: holding
+        max_temp: 85
         min_temp: 5
         temp_step: 0.5
         temperature_unit: C

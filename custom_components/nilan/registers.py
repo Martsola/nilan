@@ -659,7 +659,11 @@ class CTS700NewHoldingRegisters:
 
 
 class CTS700NordicRegisters:
-    """CTS700 Compact P Nordic XL hybrid map (community / mark007).
+    """CTS700 Compact P Køl Polar/Nordic/Arctic (XL) hybrid map.
+
+    Matches community Modbus YAML (mark007) on CTS700 LC board units with fan
+    step encoding. Hardware ref: Nilan wiring 75124xx / CTS700 LC Board v4.0
+    (Compact P Køl Polar/Nordic/Arctic XL).
 
     Fan user step is holding 4747 with values 101-104 (not percent).
     Do not use this encoding on CTS700 2018+ (21771 percent) or 2015 legacy
@@ -669,28 +673,30 @@ class CTS700NordicRegisters:
     # Classic user / climate
     user_temperature = 4746
     user_fan_step = 4747  # 101-104 = steps 1-4
-    humidity_live = 4716  # input register
+    humidity_live = 4716  # input register (RH on produktliste)
     supply_fan_speed = 4699
     extract_fan_speed = 4700
     operation_mode = 5432  # 0 off, 1 cool, 2 heat, 3 dehum, 4 DHW
     anode_status = 4233
 
-    # Input temps (scale 0.1)
-    t1_outdoor = 5152
-    t2_supply = 5153
-    t3_extract = 5154
-    t8_preheater = 5159
-    t11_dhw_top = 5162
-    t12_dhw_bottom = 5163
-    filter_alarm = 5168  # input binary
+    # Input temps (scale 0.1) — physical T labels from CTS700 LC wiring
+    t1_outdoor = 5152  # T1 Udetemperatur
+    t2_supply = 5153  # T2 Tilluft før eftervarme
+    t3_extract = 5154  # T3 Fraluft
+    t8_preheater = 5159  # T8 / preheat path (Polar/Nordic)
+    t11_dhw_top = 5162  # T11 Brugsvand top
+    t12_dhw_bottom = 5163  # T12 Brugsvand bund
+    filter_alarm = 5168  # input binary (Filtervagt B14 when present)
 
-    # Holding 20xxx / shared
+    # Holding 20xxx / shared (same Compact P addresses as 2018 PDF extras)
     filter_days = 20103
     average_humidity = 20164
     hot_water_set_point = 20460
-    t4_exhaust = 20288
-    t5_condenser = 20290
-    t6_evaporator = 20292
+    t4_exhaust = 20288  # T4 Afgang veksler
+    t5_condenser = 20290  # T5 Kondensator
+    t6_evaporator = 20292  # T6 Fordamper
+    t7_after_heater = 20294  # T7 Tilluft efter eftervarme
+    t9_water_surface = 20298  # T9 Vandflade
     fan_power_percent = 21771
     ventilation_pause = 20100  # optional; may work on hybrid units
 

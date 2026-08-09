@@ -40,6 +40,7 @@ Capability flags: `vent`, `passive`, `active`, `heat`, `cool`, `dhw`, `space`, `
 | Compact P2 EK | 425 | vent,passive,active,heat,cool,dhw | CTS602 | CompactP | `research` | Prefer CTS602 |
 | Compact P Nordic | 275 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700 | CompactP / CTS700 | `partial` | Board depends on unit |
 | Compact P XL Nordic | 430 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700_NORDIC or CTS700 | CompactP / CTS700_NORDIC / CTS700 | `supported` | See [compact-p-xl-nordic](compact-p-xl-nordic.md) |
+| Compact P Køl Polar/Nordic/Arctic (XL) | 430 | vent,passive,active,heat,cool,dhw | CTS700 LC (75124xx) | CTS700_NORDIC | `supported` | Wiring CTS700 LC v4.0; [hardware](../cts700/hardware/) |
 | Compact P GEO | 275 | +geo,space | CTS602 44 or CTS700 | CompactP GEO | `partial` | Slave 4 dump-gated on CTS700 |
 | Compact P AIR | 275 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700 | CompactP AIR / CTS700 | `partial` | |
 | Compact P EK | 275 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700 | CompactP / CTS700 | `partial` | |

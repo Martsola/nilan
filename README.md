@@ -82,7 +82,7 @@ Shared: [Hardware](docs/hardware.md) · [Installation](docs/installation.md) · 
 | Model / map | Guide |
 |---|---|
 | Compact P (2018+ Ethernet map) | [compact-p](docs/cts700/compact-p.md) |
-| Compact P Nordic XL (hybrid) | [compact-p-nordic-xl](docs/cts700/compact-p-nordic-xl.md) |
+| Compact P Køl Polar/Nordic/Arctic XL (hybrid) | [compact-p-nordic-xl](docs/cts700/compact-p-nordic-xl.md) · [hardware](docs/cts700/hardware/) |
 | CTS700 2015 legacy map | [legacy-2015](docs/cts700/legacy-2015.md) |
 | GEO / slave 4 | [geo](docs/cts700/geo.md) (dump-gated) |
 

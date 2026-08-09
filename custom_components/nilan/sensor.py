@@ -124,6 +124,17 @@ ATTRIBUTE_TO_SENSORS = {
             True,
         )
     ],
+    "get_t9_heater_temperature": [
+        Map(
+            "heater_temperature_t9",
+            UnitOfTemperature.CELSIUS,
+            SensorDeviceClass.TEMPERATURE,
+            SensorStateClass.MEASUREMENT,
+            None,
+            None,
+            True,
+        )
+    ],
     "get_t10_external_temperature": [
         Map(
             "return_air_temperature_t10",
