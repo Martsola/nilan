@@ -1,4 +1,8 @@
-"""Nilan CTS700 Compact P device (Ethernet Modbus TCP MVP)."""
+"""Nilan CTS700 Compact P 2018+ device (Ethernet Modbus TCP MVP).
+
+Fan writes use holding 21771 as percent. Room setpoint 20102, room current
+20286. Do not use Nordic 4747 step values 101-104 on this class.
+"""
 
 from __future__ import annotations
 
@@ -303,6 +307,12 @@ class DeviceCTS700:
     async def get_t6_evaporator_temperature(self) -> float | None:
         """Evaporator temperature."""
         return await self._read_temp(CTS700NewHoldingRegisters.t6_evaporator_temperature)
+
+    async def get_t8_outdoor_temperature(self) -> float | None:
+        """Outdoor air before pre-heater (holding 20296)."""
+        return await self._read_temp(
+            CTS700NewHoldingRegisters.t8_outdoor_air_before_pre_heater
+        )
 
     async def get_humidity(self) -> float | None:
         """Average humidity (no 0.1 scale)."""

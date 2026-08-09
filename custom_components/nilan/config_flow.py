@@ -12,6 +12,7 @@ from .const import (
     BOARD_TYPE_CTS602,
     BOARD_TYPE_CTS700,
     BOARD_TYPE_CTS700_LEGACY,
+    BOARD_TYPE_CTS700_NORDIC,
     DOMAIN,
 )
 from .modbus_probe import (
@@ -19,6 +20,7 @@ from .modbus_probe import (
     async_validate_cts602,
     async_validate_cts700,
     async_validate_cts700_legacy,
+    async_validate_cts700_nordic,
     is_cts700_schema_board,
 )
 
@@ -110,10 +112,16 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self.async_step_board()
 
     async def async_step_board(self, user_input: Optional[dict[str, Any]] = None):
-        """Choose auto-detect, CTS602, or CTS700 map."""
+        """Choose auto-detect, CTS602, or a CTS700 era map."""
         return self.async_show_menu(
             step_id="board",
-            menu_options=["auto_detect", "cts602", "cts700", "cts700_legacy"],
+            menu_options=[
+                "auto_detect",
+                "cts602",
+                "cts700",
+                "cts700_nordic",
+                "cts700_legacy",
+            ],
         )
 
     async def async_step_auto_detect(self, user_input: Optional[dict[str, Any]] = None):
@@ -243,6 +251,15 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return await self.async_step_serial_config()
         return await self.async_step_tcp_config()
 
+    async def async_step_cts700_nordic(
+        self, user_input: Optional[dict[str, Any]] = None
+    ):
+        """CTS700 Nordic XL hybrid map selected; continue to connection form."""
+        self._board_type = BOARD_TYPE_CTS700_NORDIC
+        if self._com_type == "serial":
+            return await self.async_step_serial_config()
+        return await self.async_step_tcp_config()
+
     async def async_step_cts700_legacy(
         self, user_input: Optional[dict[str, Any]] = None
     ):
@@ -266,6 +283,13 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 if board == BOARD_TYPE_CTS700:
                     await async_validate_cts700(
+                        "tcp",
+                        user_input["host_port"],
+                        user_input["unit_id"],
+                        user_input["host_ip"],
+                    )
+                elif board == BOARD_TYPE_CTS700_NORDIC:
+                    await async_validate_cts700_nordic(
                         "tcp",
                         user_input["host_port"],
                         user_input["unit_id"],
@@ -312,6 +336,10 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 if board == BOARD_TYPE_CTS700:
                     await async_validate_cts700(
+                        "serial", user_input["host_port"], user_input["unit_id"], None
+                    )
+                elif board == BOARD_TYPE_CTS700_NORDIC:
+                    await async_validate_cts700_nordic(
                         "serial", user_input["host_port"], user_input["unit_id"], None
                     )
                 elif board == BOARD_TYPE_CTS700_LEGACY:

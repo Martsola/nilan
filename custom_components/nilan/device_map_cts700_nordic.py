@@ -1,10 +1,6 @@
-"""CTS700 Compact P 2018+ entity map (MVP).
+"""CTS700 Compact P Nordic XL hybrid entity map (full community parity)."""
 
-Fan/setpoint stay on 21771 / 20102 / 20286. Safe 20xxx extras only; never
-Nordic 4747 step encoding (101-104) on this board path.
-"""
-
-CTS700_ENTITY_MAP = {
+CTS700_NORDIC_ENTITY_MAP = {
     "get_run_state": {"entity_type": "config"},
     "get_operation_mode": {"entity_type": "config"},
     "get_ventilation_step": {"entity_type": "config"},
@@ -19,7 +15,13 @@ CTS700_ENTITY_MAP = {
     "get_t6_evaporator_temperature": {"entity_type": "sensor"},
     "get_t8_outdoor_temperature": {"entity_type": "sensor"},
     "get_humidity": {"entity_type": "sensor"},
+    "get_average_humidity": {"entity_type": "sensor"},
     "get_days_to_air_filter_change": {"entity_type": "sensor"},
+    "get_filter_alarm_state": {"entity_type": "binary_sensor"},
+    "get_fan_speed_percent": {"entity_type": "sensor"},
+    "get_supply_fan_speed": {"entity_type": "sensor"},
+    "get_return_fan_speed": {"entity_type": "sensor"},
+    "get_anode_state": {"entity_type": "sensor"},
     "get_electric_water_heater_setpoint": {
         "entity_type": "config",
         "requires_capabilities": "dhw",

@@ -9,16 +9,21 @@ Different controller boards, register maps, and typical unit ids.
 
 ## Can the integration auto-detect my board?
 
-Yes. After TCP or Serial, choose **Auto-detect**. The flow probes CTS602 `control_type` (1000), then CTS700 2018+ outdoor temp (20282), then CTS700 2015 T1+setpoint (5152 / 4746), using unit id **1** then **30** if you leave unit id empty. Confirm the result before the entry is created. You can still pick CTS602, CTS700 2018+, or CTS700 2015 manually.
+Yes. After TCP or Serial, choose **Auto-detect**. Probe order: CTS602 `control_type` (1000), then CTS700 Nordic (holding **4747** in **101–104**), then CTS700 2018+ outdoor temp (20282), then CTS700 2015 T1+setpoint (5152 / 4746). Unit id **1** then **30** if you leave unit id empty. Confirm the result before the entry is created. You can still pick CTS602, CTS700 Nordic XL, CTS700 2018+, or CTS700 2015 manually.
 
 ## Why can the CTS700 PDF disagree with live values?
 
 Firmware eras differ:
 
-- **2015 map** (PDF 20150826): registers mostly under 10000 (setpoint 4746, T1 5152, …). Use board **CTS700 (2015 legacy map)**. Guide: [cts700/legacy-2015.md](cts700/legacy-2015.md).
-- **2018+ / Compact P map**: 20xxx registers. Use board **CTS700 (2018+ / Compact P)**. Guide: [cts700/compact-p.md](cts700/compact-p.md).
+- **2015 map** (PDF 20150826): registers mostly under 10000 (setpoint 4746, fan **4747 percent**, …). Use board **CTS700 (2015 legacy map)**. Guide: [cts700/legacy-2015.md](cts700/legacy-2015.md).
+- **Nordic XL hybrid**: fan **4747 = 101–104**, mixed classic + 20xxx. Use **CTS700 Compact P Nordic XL**. Guide: [cts700/compact-p-nordic-xl.md](cts700/compact-p-nordic-xl.md).
+- **2018+ / Compact P map**: 20xxx registers (fan **21771** percent, setpoint **20102**). Use board **CTS700 (2018+ / Compact P)**. Guide: [cts700/compact-p.md](cts700/compact-p.md).
 
-Compact P live installs may also disagree with some PDF labels. Prefer live-verified tables in those guides.
+Compact P live installs may also disagree with some PDF labels. Prefer live-verified tables in those guides. Era matrix: [cts700/README.md](cts700/README.md).
+
+## Compact P XL Nordic: CTS602 or CTS700?
+
+Catalog pages often say CTS602. If HMI type is **44** / unit id **30**, choose **CTS602**. If Modbus shows Nordic step fan on **4747**, choose **CTS700 Compact P Nordic XL**. Hub: [catalog/compact-p-xl-nordic.md](catalog/compact-p-xl-nordic.md).
 
 ## Unsupported device on CTS602?
 

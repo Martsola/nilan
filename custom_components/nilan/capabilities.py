@@ -71,6 +71,7 @@ CTS602_CAPABILITIES: Mapping[int, FrozenSet[str]] = {
 
 CTS700_CAPABILITIES: FrozenSet[str] = _COMPACT
 CTS700_LEGACY_CAPABILITIES: FrozenSet[str] = _COMPACT
+CTS700_NORDIC_CAPABILITIES: FrozenSet[str] = _COMPACT
 
 # Marketing / plate aliases -> HMI name and optional type id
 MARKETING_ALIASES: Mapping[str, Mapping[str, object]] = {
@@ -108,6 +109,21 @@ MARKETING_ALIASES: Mapping[str, Mapping[str, object]] = {
     "compact p ek": {"hmi": "CompactP or CTS700", "type_id": 44},
     "compact p geo": {"hmi": "CompactP", "type_id": 44},
     "compact p nordic": {"hmi": "CompactP or CTS700", "type_id": 44},
+    "compact p xl nordic": {"hmi": "CompactP", "type_id": 44, "board": "CTS602"},
+    "compact p nordic xl": {"hmi": "CompactP", "type_id": 44, "board": "CTS602"},
+    "compact p xl nordic rf": {
+        "hmi": "CompactP or CTS700_NORDIC",
+        "type_id": 44,
+    },
+    "compact p nordic xl rf": {
+        "hmi": "CompactP or CTS700_NORDIC",
+        "type_id": 44,
+    },
+    "nordic xl rf": {
+        "hmi": "CompactP or CTS700_NORDIC",
+        "type_id": 44,
+    },
+    "compact p xl polar": {"hmi": "CompactP", "type_id": 44, "board": "CTS602"},
     "vp 18 m2": {"hmi": "VP18 M2", "type_id": 32},
     "vp 18 m2 ek": {"hmi": "VP 18ek", "type_id": 20},
     "vgu 180 ek": {"hmi": "VGU180 ek", "type_id": 38},
@@ -136,6 +152,11 @@ def capabilities_for_cts700() -> FrozenSet[str]:
 def capabilities_for_cts700_legacy() -> FrozenSet[str]:
     """Return capability flags for CTS700 2015 legacy map."""
     return CTS700_LEGACY_CAPABILITIES
+
+
+def capabilities_for_cts700_nordic() -> FrozenSet[str]:
+    """Return capability flags for CTS700 Nordic XL hybrid map."""
+    return CTS700_NORDIC_CAPABILITIES
 
 
 def entity_allowed(

@@ -13,7 +13,8 @@ These examples live in [`dashboards/`](../dashboards/) and contain **only Nilan*
 1. Settings → Dashboards → **Add dashboard**.
 2. Open the new dashboard → three-dot menu → **Raw configuration editor**.
 3. Paste the contents of:
-   - [`dashboards/cts700_compact_p.yaml`](../dashboards/cts700_compact_p.yaml) for CTS700 Compact P, or
+   - [`dashboards/cts700_compact_p.yaml`](../dashboards/cts700_compact_p.yaml) for CTS700 Compact P 2018+,
+   - [`dashboards/cts700_compact_p_nordic_xl.yaml`](../dashboards/cts700_compact_p_nordic_xl.yaml) for Nordic XL, or
    - [`dashboards/cts602_overview.yaml`](../dashboards/cts602_overview.yaml) for CTS602
 4. Save. Fix any unknown entities (hide or remove cards your unit does not expose).
 

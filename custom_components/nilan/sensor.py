@@ -399,6 +399,17 @@ ATTRIBUTE_TO_SENSORS = {
             True,
         )
     ],
+    "get_fan_speed_percent": [
+        Map(
+            "fan_speed_percent",
+            PERCENTAGE,
+            None,
+            SensorStateClass.MEASUREMENT,
+            None,
+            "mdi:fan-speed-3",
+            True,
+        )
+    ],
     "get_display_text_1": [
         Map(
             "display_text_line_1",

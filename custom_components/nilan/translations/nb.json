@@ -7,6 +7,7 @@
           "cannot_connect": "Kunne ikke koble til",
           "invalid_response": "Ugyldig svar fra enheten",
           "unsupported_device": "Ustøttet enhet",
+          "cannot_detect": "Kunne ikke oppdage CTS602 eller CTS700 (Nordic / 2018+ / 2015). Sjekk vert, port og enhets-ID, eller velg kort manuelt.",
           "unknown": "Uventet feil"
       },
       "step": {
@@ -15,6 +16,16 @@
               "menu_options": {
                   "tcp": "TCP",
                   "serial": "Seriell"
+              }
+          },
+          "board": {
+              "title": "Velg styrekort",
+              "menu_options": {
+                  "auto_detect": "Auto-oppdag",
+                  "cts602": "CTS602",
+                  "cts700": "CTS700 (2018+ / Compact P)",
+                  "cts700_nordic": "CTS700 Compact P Nordic XL",
+                  "cts700_legacy": "CTS700 (2015 eldre kart)"
               }
           },
           "tcp": {

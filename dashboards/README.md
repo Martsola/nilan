@@ -4,7 +4,8 @@
 
 | File | Board |
 |---|---|
-| [cts700_compact_p.yaml](cts700_compact_p.yaml) | CTS700 Compact P MVP |
+| [cts700_compact_p.yaml](cts700_compact_p.yaml) | CTS700 Compact P 2018+ |
+| [cts700_compact_p_nordic_xl.yaml](cts700_compact_p_nordic_xl.yaml) | CTS700 Compact P Nordic XL |
 | [cts602_overview.yaml](cts602_overview.yaml) | CTS602 |
 
 GEO / slave 4: no dedicated dashboard yet (dump-gated). See [docs/cts700/geo.md](../docs/cts700/geo.md).

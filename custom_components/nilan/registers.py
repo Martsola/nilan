@@ -658,6 +658,43 @@ class CTS700NewHoldingRegisters:
     fan_speed = 21771
 
 
+class CTS700NordicRegisters:
+    """CTS700 Compact P Nordic XL hybrid map (community / mark007).
+
+    Fan user step is holding 4747 with values 101-104 (not percent).
+    Do not use this encoding on CTS700 2018+ (21771 percent) or 2015 legacy
+    (4747 percent 0-100).
+    """
+
+    # Classic user / climate
+    user_temperature = 4746
+    user_fan_step = 4747  # 101-104 = steps 1-4
+    humidity_live = 4716  # input register
+    supply_fan_speed = 4699
+    extract_fan_speed = 4700
+    operation_mode = 5432  # 0 off, 1 cool, 2 heat, 3 dehum, 4 DHW
+    anode_status = 4233
+
+    # Input temps (scale 0.1)
+    t1_outdoor = 5152
+    t2_supply = 5153
+    t3_extract = 5154
+    t8_preheater = 5159
+    t11_dhw_top = 5162
+    t12_dhw_bottom = 5163
+    filter_alarm = 5168  # input binary
+
+    # Holding 20xxx / shared
+    filter_days = 20103
+    average_humidity = 20164
+    hot_water_set_point = 20460
+    t4_exhaust = 20288
+    t5_condenser = 20290
+    t6_evaporator = 20292
+    fan_power_percent = 21771
+    ventilation_pause = 20100  # optional; may work on hybrid units
+
+
 class CTS700LegacyHoldingRegisters:
     """CTS700 holding registers from Nilan Modbus PDF dated 20150826.
 
@@ -680,6 +717,7 @@ class CTS700LegacyHoldingRegisters:
     operation_type = 2402  # 0 auto, 1 cooling, 2 heating (PDF)
     pause_mode = 4727  # 0 none, 1 vent, 2 DHW, 3 all
     user_temperature = 4746
+    # Fan percent 0-100 on 2015 map. Not Nordic step encoding 101-104.
     user_fan_speed = 4747
     user_temp_dhw = 5548
 

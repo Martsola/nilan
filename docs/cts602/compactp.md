@@ -11,13 +11,18 @@
 
 ## Variants
 
-CompactP, CompactP AIR, CompactP GEO (software probe). Marketing names such as Compact P Nordic / AIR / EK / XL and **Compact P2*** usually map here when the board is CTS602. See [compact-p2.md](compact-p2.md) and [../catalog/aliases.md](../catalog/aliases.md).
+CompactP, CompactP AIR, CompactP GEO (software probe). Marketing names such as Compact P Nordic / AIR / EK / XL and **Compact P2*** usually map here when the board is CTS602. Catalog Compact P XL Nordic: [../catalog/compact-p-xl-nordic.md](../catalog/compact-p-xl-nordic.md). See [compact-p2.md](compact-p2.md) and [../catalog/aliases.md](../catalog/aliases.md).
 
 ## Important
 
 This guide is for Compact P units on a **CTS602** board (HMI type 44).
 
-If your Compact P has a **CTS700** controller with Ethernet LAN and Modbus TCP on unit id 1, use [../cts700/compact-p.md](../cts700/compact-p.md) instead.
+If your Compact P has a **CTS700** controller with Ethernet LAN and Modbus TCP on unit id 1:
+
+- Fan **21771** percent / setpoint **20102**: [../cts700/compact-p.md](../cts700/compact-p.md)
+- Fan **4747** steps **101–104**: [../cts700/compact-p-nordic-xl.md](../cts700/compact-p-nordic-xl.md)
+
+Reference YAML for type 44: [`modbus_yaml/cts602_compactp.yaml`](../../modbus_yaml/cts602_compactp.yaml).
 
 ## Hardware
 

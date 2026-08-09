@@ -11,8 +11,10 @@ Maps [nilan.no](https://www.nilan.no/produkter) marketing names to HMI type name
 | VPL 25 | VPL 25c | 25 | [vpl-25c](../cts602/vpl-25c.md) |
 | VPL 28 (bolig-sized) | VPM/28EC | 26 | [vpm-28ec](../cts602/vpm-28ec.md) |
 | Compact S | CompactS | 10 | [compacts](../cts602/compacts.md) |
-| Compact P (CTS602), Compact P AIR/GEO/EK/Nordic/XL, Compact P2* | CompactP | 44 | [compactp](../cts602/compactp.md) · [compact-p2](../cts602/compact-p2.md) |
-| Compact P (CTS700 Ethernet) | CTS700 Compact P | n/a | [cts700/compact-p](../cts700/compact-p.md) |
+| Compact P (CTS602), Compact P AIR/GEO/EK/Nordic/XL, Compact P2* | CompactP | 44 | [compactp](../cts602/compactp.md) · [compact-p2](../cts602/compact-p2.md) · [compact-p-xl-nordic](compact-p-xl-nordic.md) |
+| Compact P XL Nordic / Nordic XL RF (CTS602 plate) | CompactP | 44 | [compactp](../cts602/compactp.md) · [compact-p-xl-nordic](compact-p-xl-nordic.md) |
+| Compact P Nordic XL RF (CTS700 hybrid, 4747=101–104) | CTS700_NORDIC | n/a | [cts700/compact-p-nordic-xl](../cts700/compact-p-nordic-xl.md) |
+| Compact P (CTS700 Ethernet 2018+) | CTS700 Compact P | n/a | [cts700/compact-p](../cts700/compact-p.md) |
 | VP 18 M2 | VP18 M2 | 32 | [vp18-m2](../cts602/vp18-m2.md) |
 | VP 18 M2 EK, VP 18 EK | VP 18ek / VP 18cek | 20 / 21 | [vp-18ek](../cts602/vp-18ek.md) |
 | Combi 302 Polar | COMBI 302 | 35 | [combi-302](../cts602/combi-302.md) |

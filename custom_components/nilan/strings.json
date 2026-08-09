@@ -14,6 +14,7 @@
           "auto_detect": "Auto-detect",
           "cts602": "CTS602",
           "cts700": "CTS700 (2018+ / Compact P)",
+          "cts700_nordic": "CTS700 Compact P Nordic XL",
           "cts700_legacy": "CTS700 (2015 legacy map)"
         }
       },
@@ -56,7 +57,7 @@
       },
       "confirm": {
         "title": "Confirm detected Nilan",
-        "description": "Detected board: {board_type}. Model: {model}. Unit ID: {unit_id}. Choose accept to create the entry, or manual to pick CTS602 / CTS700 yourself.",
+        "description": "Detected board: {board_type}. Model: {model}. Unit ID: {unit_id}. Choose accept to create the entry, or manual to pick CTS602 / CTS700 (Nordic / 2018+ / 2015) yourself.",
         "data": {
           "action": "Action (accept or manual)"
         }
@@ -82,7 +83,7 @@
       "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
       "invalid_response": "[%key:common::config_flow::error::invalid_response%]",
       "unsupported_device": "[%key:common::config_flow::error::invalid_device%]",
-      "cannot_detect": "Could not detect CTS602 or CTS700 (2018+ or 2015 map). Check host, port, and unit id, or choose the board manually.",
+      "cannot_detect": "Could not detect CTS602 or CTS700 (Nordic / 2018+ / 2015). Check host, port, and unit id, or choose the board manually.",
       "unknown": "[%key:common::config_flow::error::unknown%]"
     },
     "abort": {
@@ -102,7 +103,8 @@
       "circulation_pump": {"name": "Circulation Pump"},
       "heater_relay_1": {"name": "Heater Relay 1"},
       "heater_relay_2": {"name": "Heater Relay 2"},
-      "heater_relay_3": {"name": "Heater Relay 3"}
+      "heater_relay_3": {"name": "Heater Relay 3"},
+      "filter_alarm": {"name": "Filter Alarm"}
     },
     "button": {
       "sync_time": {"name": "Synchronize Time and Date"}
@@ -642,6 +644,7 @@
       "return_fan_level": {"name": "Return Fan Level"},
       "return_fan_speed": {"name": "Return Fan Speed"},
       "supply_fan_speed": {"name": "Supply Fan Speed"},
+      "fan_speed_percent": {"name": "Fan Speed Percent"},
       "display_text_line_1": {"name": "Display Text Line 1"},
       "display_text_line_2": {"name": "Display Text Line 2"},
       "modbus_version": {"name": "ModBus Version"},

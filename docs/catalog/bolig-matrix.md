@@ -39,7 +39,7 @@ Capability flags: `vent`, `passive`, `active`, `heat`, `cool`, `dhw`, `space`, `
 | Compact P2 AIR | 425 | vent,passive,active,heat,cool,dhw | CTS602 | CompactP AIR | `research` | Prefer CTS602 |
 | Compact P2 EK | 425 | vent,passive,active,heat,cool,dhw | CTS602 | CompactP | `research` | Prefer CTS602 |
 | Compact P Nordic | 275 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700 | CompactP / CTS700 | `partial` | Board depends on unit |
-| Compact P XL Nordic | 430 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700 | CompactP / CTS700 | `partial` | |
+| Compact P XL Nordic | 430 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700_NORDIC or CTS700 | CompactP / CTS700_NORDIC / CTS700 | `supported` | See [compact-p-xl-nordic](compact-p-xl-nordic.md) |
 | Compact P GEO | 275 | +geo,space | CTS602 44 or CTS700 | CompactP GEO | `partial` | Slave 4 dump-gated on CTS700 |
 | Compact P AIR | 275 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700 | CompactP AIR / CTS700 | `partial` | |
 | Compact P EK | 275 | vent,passive,active,heat,cool,dhw | CTS602 44 or CTS700 | CompactP / CTS700 | `partial` | |
@@ -55,7 +55,9 @@ Capability flags: `vent`, `passive`, `active`, `heat`, `cool`, `dhw`, `space`, `
 |---|---|
 | HMI / plate says CTS602, typical unit id 30 | CTS602 or Auto-detect |
 | Compact P with Ethernet Modbus TCP, unit id 1, 20xxx registers | CTS700 (2018+) |
-| Older CTS700 map under 10000 | CTS700 (2015 legacy) |
+| Holding 4747 in 101–104 (Nordic step fan) | CTS700 Compact P Nordic XL |
+| Older CTS700 map under 10000, 4747 percent | CTS700 (2015 legacy) |
+| Compact P XL Nordic catalog / type 44 RS485 | CTS602 first; see [compact-p-xl-nordic](compact-p-xl-nordic.md) |
 | Compact P2 (current manuals) | CTS602 first |
 
 ## Related

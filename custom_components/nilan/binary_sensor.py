@@ -135,6 +135,16 @@ ATTRIBUTE_TO_BINARY_SENSORS = {
             True,
         )
     ],
+    "get_filter_alarm_state": [
+        Map(
+            "filter_alarm",
+            BinarySensorDeviceClass.PROBLEM,
+            None,
+            "mdi:air-filter",
+            "mdi:air-filter",
+            True,
+        )
+    ],
 }
 
 

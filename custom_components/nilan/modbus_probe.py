@@ -1,9 +1,13 @@
 """Modbus probe helpers for Nilan config flow.
 
-Auto-detect order: CTS602 (incl. commercial units that share CTS602),
-then CTS700 2018+, then CTS700 2015 legacy. Never force commercial
-VR/VPM/Comfort 600 onto CTS700 Compact P maps without a dump.
-CTS400 is not probed until a verified map exists.
+Auto-detect order (compatibility contract):
+1. CTS602 (incl. commercial units that share CTS602)
+2. CTS700 Nordic hybrid (holding 4747 in 101-104)
+3. CTS700 2018+ (20xxx outdoor temp)
+4. CTS700 2015 legacy
+
+Never force commercial VR/VPM/Comfort 600 onto CTS700 Compact P maps
+without a dump. CTS400 is not probed until a verified map exists.
 """
 
 from __future__ import annotations
@@ -14,17 +18,24 @@ from typing import Any
 from pymodbus.client import AsyncModbusSerialClient, AsyncModbusTcpClient
 from pymodbus.exceptions import ModbusException
 
-from .const import BOARD_TYPE_CTS602, BOARD_TYPE_CTS700, BOARD_TYPE_CTS700_LEGACY
+from .const import (
+    BOARD_TYPE_CTS602,
+    BOARD_TYPE_CTS700,
+    BOARD_TYPE_CTS700_LEGACY,
+    BOARD_TYPE_CTS700_NORDIC,
+)
 from .device_map import CTS602_DEVICE_TYPES
 from .registers import (
     CTS602HoldingRegisters,
     CTS700LegacyHoldingRegisters,
     CTS700NewHoldingRegisters,
+    CTS700NordicRegisters,
 )
 
 # Scaled CTS700 temps (register / 10). Plausible outdoor/extract band.
 _CTS700_TEMP_MIN = -40.0
 _CTS700_TEMP_MAX = 80.0
+_NORDIC_FAN_STEPS = frozenset({101, 102, 103, 104})
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -96,6 +107,49 @@ async def async_validate_cts602(com_type, port, unit_id, address: str | None) ->
     return value_output
 
 
+async def async_validate_cts700_nordic(
+    com_type, port, unit_id, address: str | None
+) -> None:
+    """Validate Nordic hybrid: fan step 101-104 and T3 input readable."""
+    client = await open_client(com_type, port, address)
+    try:
+        fan = await client.read_holding_registers(
+            CTS700NordicRegisters.user_fan_step,
+            count=1,
+            device_id=int(unit_id),
+        )
+        extract = await client.read_input_registers(
+            CTS700NordicRegisters.t3_extract,
+            count=1,
+            device_id=int(unit_id),
+        )
+    except ModbusException as value_error:
+        client.close()
+        raise ValueError("cannot_connect") from value_error
+    if hasattr(fan, "message") or hasattr(extract, "message"):
+        client.close()
+        raise ValueError("invalid_response")
+    if (
+        fan is None
+        or extract is None
+        or len(fan.registers) == 0
+        or len(extract.registers) == 0
+    ):
+        client.close()
+        raise ValueError("invalid_response")
+    fan_val = holding_u16(fan.registers)
+    extract_c = holding_s16_temp(extract.registers)
+    client.close()
+    if fan_val not in _NORDIC_FAN_STEPS:
+        raise ValueError("invalid_response")
+    if (
+        extract_c is None
+        or extract_c < _CTS700_TEMP_MIN
+        or extract_c > _CTS700_TEMP_MAX
+    ):
+        raise ValueError("invalid_response")
+
+
 async def async_validate_cts700(com_type, port, unit_id, address: str | None) -> None:
     """Validate CTS700 (2018+ map) by probing outdoor temperature register."""
     client = await open_client(com_type, port, address)
@@ -157,17 +211,38 @@ async def async_validate_cts700_legacy(
         raise ValueError("invalid_response")
     if setpoint_c is None or setpoint_c < 5.0 or setpoint_c > 50.0:
         raise ValueError("invalid_response")
+    # Reject Nordic step encoding mis-classified as percent legacy.
+    client2 = await open_client(com_type, port, address)
+    try:
+        fan = await client2.read_holding_registers(
+            CTS700LegacyHoldingRegisters.user_fan_speed,
+            count=1,
+            device_id=int(unit_id),
+        )
+    except ModbusException:
+        client2.close()
+        return
+    if fan is not None and not hasattr(fan, "message") and len(fan.registers) > 0:
+        fan_val = holding_u16(fan.registers)
+        if fan_val in _NORDIC_FAN_STEPS:
+            client2.close()
+            raise ValueError("invalid_response")
+    client2.close()
 
 
 def is_cts700_schema_board(board: str) -> bool:
     """True when board uses CTS700 TCP/Serial defaults (unit id 1)."""
-    return board in (BOARD_TYPE_CTS700, BOARD_TYPE_CTS700_LEGACY)
+    return board in (
+        BOARD_TYPE_CTS700,
+        BOARD_TYPE_CTS700_LEGACY,
+        BOARD_TYPE_CTS700_NORDIC,
+    )
 
 
 async def async_detect_board(
     com_type: str, port, address: str | None, unit_id: int | None
 ) -> dict[str, Any]:
-    """Probe CTS602, CTS700 2018+, then CTS700 2015. Returns board info."""
+    """Probe CTS602, Nordic, 2018+, then 2015. Returns board info."""
     candidates: list[int] = []
     if unit_id is not None:
         candidates.append(int(unit_id))
@@ -188,6 +263,18 @@ async def async_detect_board(
         except ValueError as err:
             last_error = str(err)
             _LOGGER.debug("CTS602 probe unit_id=%s failed: %s", candidate, err)
+
+        try:
+            await async_validate_cts700_nordic(com_type, port, candidate, address)
+            return {
+                "board_type": BOARD_TYPE_CTS700_NORDIC,
+                "unit_id": candidate,
+                "model": "Compact P Nordic XL CTS700",
+                "type_id": None,
+            }
+        except ValueError as err:
+            last_error = str(err)
+            _LOGGER.debug("CTS700 Nordic probe unit_id=%s failed: %s", candidate, err)
 
         try:
             await async_validate_cts700(com_type, port, candidate, address)

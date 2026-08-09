@@ -17,8 +17,10 @@ No RS485 bridge is required for native Ethernet CTS700.
 1. Install from HACS or copy `custom_components/nilan` from this fork (`master`).
 2. Add **Nilan** integration.
 3. Choose **TCP**.
-4. Choose **CTS700 (Compact P MVP)**.
+4. Choose **CTS700 (2018+ / Compact P)**.
 5. Enter IP, port `502`, unit id `1`.
+
+Do **not** choose Nordic XL if fan is percent on **21771**. Nordic step fan (**4747 = 101–104**) is a different board: [compact-p-nordic-xl.md](compact-p-nordic-xl.md).
 
 ## Live-verified registers (Compact P)
 
@@ -34,6 +36,7 @@ No RS485 bridge is required for native Ethernet CTS700.
 | Fan speed | 21771 | Percent 0-100 on Compact P (integration maps to climate levels 0-4) |
 | After heat exchange | 20288 | |
 | After heat pump | 20290 | |
+| T8 before pre-heater | 20296 | Safe 20xxx extra (not Nordic input 5159) |
 
 Protocol PDF (2018):  
 https://www.en.nilan.dk/Files/Files/Engelsk/Downloads/7.%20Modbus%20-%20BACnet/2018_04_Modbus_CTS700_Modbus_protokol.pdf
@@ -74,11 +77,13 @@ Fixes from that pass (v1.3.1): climate HVAC mode no longer stuck on `unknown` fo
 ## Not this guide
 
 - Older CTS700 firmware with registers under 10000: use [legacy-2015.md](legacy-2015.md).
+- Nordic XL hybrid (4747 steps 101–104): use [compact-p-nordic-xl.md](compact-p-nordic-xl.md).
 - Compact P with a **CTS602** HMI / board (type id 44): use [../cts602/compactp.md](../cts602/compactp.md).
 
 ## Related
 
-- [CTS700 overview](README.md)
+- [CTS700 era matrix](README.md)
 - [Hardware](../hardware.md)
 - [FAQ](../faq.md)
+- Reference YAML: [`modbus_yaml/cts700_2018_compact_p.yaml`](../../modbus_yaml/cts700_2018_compact_p.yaml)
 - Issue tracking: https://github.com/veista/nilan/issues/19

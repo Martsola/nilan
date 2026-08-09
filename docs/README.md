@@ -7,7 +7,7 @@ Setup guides for each controller / model supported by this integration.
 | Controller | Status | Docs |
 |---|---|---|
 | [CTS602](cts602/README.md) | Stable | Full device list below |
-| [CTS700](cts700/README.md) | MVP (2018+ and 2015 maps) | [compact-p](cts700/compact-p.md) · [legacy-2015](cts700/legacy-2015.md) · [geo](cts700/geo.md) |
+| [CTS700](cts700/README.md) | MVP (2015 / Nordic / 2018+) | [compact-p](cts700/compact-p.md) · [nordic-xl](cts700/compact-p-nordic-xl.md) · [legacy-2015](cts700/legacy-2015.md) · [geo](cts700/geo.md) |
 | [CTS400](naering/cts400.md) | Not implemented | Dump-gated |
 
 ## Product catalog (nilan.no)
@@ -17,6 +17,7 @@ Setup guides for each controller / model supported by this integration.
 | [Bolig](catalog/bolig-matrix.md) | Residential SKUs |
 | [Næring](catalog/naering-matrix.md) | Commercial SKUs |
 | [Aliases](catalog/aliases.md) | Marketing name → HMI |
+| [Compact P XL Nordic hub](catalog/compact-p-xl-nordic.md) | CTS602 vs CTS700 Nordic vs 2018+ |
 | [Næring research](naering/README.md) | Commercial controller notes |
 
 ## Shared topics
@@ -58,6 +59,7 @@ Setup guides for each controller / model supported by this integration.
 | Model / map | Guide |
 |---|---|
 | Compact P (2018+ Ethernet) | [compact-p.md](cts700/compact-p.md) |
+| Compact P Nordic XL (hybrid) | [compact-p-nordic-xl.md](cts700/compact-p-nordic-xl.md) |
 | CTS700 2015 legacy | [legacy-2015.md](cts700/legacy-2015.md) |
 | GEO / slave 4 | [geo.md](cts700/geo.md) (dump-gated) |
 

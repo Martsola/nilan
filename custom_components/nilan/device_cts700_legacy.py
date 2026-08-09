@@ -1,4 +1,8 @@
-"""Nilan CTS700 2015 legacy device (older Modbus map under 10000)."""
+"""Nilan CTS700 2015 legacy device (older Modbus map under 10000).
+
+Fan on holding 4747 is percent 0-100 (mapped to climate 0-4). Never write
+Nordic step values 101-104 here; that encoding belongs to CTS700_NORDIC.
+"""
 
 from __future__ import annotations
 
@@ -212,17 +216,24 @@ class DeviceCTS700Legacy:
         return True
 
     async def get_ventilation_step(self) -> int | None:
-        """Get fan speed as climate levels 0-4 from percent 20-100."""
+        """Get fan speed as climate levels 0-4 from percent 0-100 on 4747."""
         value = await self._read_holding_unsigned(Reg.user_fan_speed)
         if value is None:
             _LOGGER.error("Could not read get_ventilation_step")
+            return None
+        if value in (101, 102, 103, 104):
+            _LOGGER.error(
+                "Holding 4747=%s looks like Nordic step encoding; "
+                "use board CTS700 Compact P Nordic XL",
+                value,
+            )
             return None
         if value > 4:
             return min(4, max(0, int(round(value / 25.0))))
         return value
 
     async def set_ventilation_step(self, mode: int) -> bool:
-        """Set fan speed level 0-4 as percent 0/25/50/75/100."""
+        """Set fan speed level 0-4 as percent 0/25/50/75/100 on 4747."""
         if mode in (0, 1, 2, 3, 4):
             await self._write_holding(Reg.user_fan_speed, mode * 25)
             return True
