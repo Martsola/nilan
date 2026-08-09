@@ -26,6 +26,7 @@ Setup guides for each controller / model supported by this integration.
 - [Installation](installation.md)
 - [Dashboards (Nilan only)](dashboards.md)
 - [FAQ](faq.md)
+- [Changelog (releases)](../changelog/README.md)
 
 ## CTS602 devices (HMI type names)
 

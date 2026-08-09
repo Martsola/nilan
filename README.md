@@ -4,7 +4,7 @@
 
 Modbus TCP/RTU integration for Nilan ventilation and Compact units in Home Assistant.
 
-[Docs](docs/README.md) · [Installation](docs/installation.md) · [Dashboards](docs/dashboards.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Accessibility](ACCESSIBILITY.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [License](LICENSE)
+[Docs](docs/README.md) · [Changelog](changelog/README.md) · [Installation](docs/installation.md) · [Dashboards](docs/dashboards.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Accessibility](ACCESSIBILITY.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [License](LICENSE)
 
 ## Vision (this fork)
 
