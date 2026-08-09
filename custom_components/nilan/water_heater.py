@@ -64,7 +64,17 @@ class NilanTopWaterHeater(NilanEntity, WaterHeaterEntity):
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
-        await self._device.set_electric_water_heater_setpoint(kwargs[ATTR_TEMPERATURE])
+        temperature = kwargs.get(ATTR_TEMPERATURE)
+        if temperature is None:
+            return
+        ok = await self._device.set_electric_water_heater_setpoint(temperature)
+        if ok is False:
+            self._attr_target_temperature = (
+                await self._device.get_electric_water_heater_setpoint()
+            )
+        else:
+            self._attr_target_temperature = temperature
+            self._previous_temp = temperature
         self.async_write_ha_state()
 
     async def async_set_operation_mode(self, operation_mode):
@@ -149,9 +159,17 @@ class NilanBottomWaterHeater(NilanEntity, WaterHeaterEntity):
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
-        await self._device.set_compressor_water_heater_setpoint(
-            kwargs[ATTR_TEMPERATURE]
-        )
+        temperature = kwargs.get(ATTR_TEMPERATURE)
+        if temperature is None:
+            return
+        ok = await self._device.set_compressor_water_heater_setpoint(temperature)
+        if ok is False:
+            self._attr_target_temperature = (
+                await self._device.get_compressor_water_heater_setpoint()
+            )
+        else:
+            self._attr_target_temperature = temperature
+            self._previous_temp = temperature
         self.async_write_ha_state()
 
     async def async_set_operation_mode(self, operation_mode):

@@ -59,7 +59,7 @@ class DeviceCTS700Nordic:
             "method": "rtu",
             "delay": 0,
             "port": self._host_port,
-            "timeout": 1,
+            "timeout": 3,
             "host": self._host_ip,
             "parity": "E",
             "baudrate": 19200,
@@ -189,11 +189,28 @@ class DeviceCTS700Nordic:
             )
         return None
 
-    async def _write_holding(self, address: int, value: int) -> None:
-        """Write one holding register."""
-        await self._modbus.async_pb_call(
+    async def _write_holding(self, address: int, value: int) -> bool:
+        """Write one holding register.
+
+        Prefer FC6 write_register (HA Modbus climate default for setpoints).
+        Fall back to FC16 write_registers (fan step 4747 accepts FC16).
+        """
+        result = await self._modbus.async_pb_call(
+            self._unit_id, address, value, "write_register"
+        )
+        if result is not None:
+            return True
+        result = await self._modbus.async_pb_call(
             self._unit_id, address, [value], "write_registers"
         )
+        if result is None:
+            _LOGGER.error(
+                "CTS700 Nordic write failed address=%s value=%s (FC6 and FC16)",
+                address,
+                value,
+            )
+            return False
+        return True
 
     async def _read_temp_input(self, address: int) -> float | None:
         """Read input temperature with 0.1 scale."""
@@ -209,18 +226,60 @@ class DeviceCTS700Nordic:
             return None
         return float(value) / _TEMP_SCALE
 
+    async def _temp_matches(self, address: int, celsius: float) -> bool:
+        """True if holding temp readback matches wanted Celsius."""
+        verify = await self._read_temp_holding(address)
+        if verify is None:
+            return False
+        return abs(verify - celsius) <= 0.15
+
     async def _write_temp(
         self, address: int, celsius: float, min_v: float, max_v: float
     ) -> bool:
-        """Write temperature with 0.1 scale."""
-        if celsius < min_v or celsius > max_v:
+        """Write temperature with 0.1 scale; verify readback.
+
+        Room/DHW setpoints on Compact P Nordic match HA YAML climate: FC6 first.
+        Some firmwares reject FC16 on 4746/20460 while still accepting FC16 on 4747.
+        """
+        try:
+            celsius_f = float(celsius)
+        except (TypeError, ValueError):
+            _LOGGER.error("CTS700 Nordic temp write invalid value %r", celsius)
             return False
-        raw = int(round(celsius * _TEMP_SCALE))
+        if celsius_f < min_v or celsius_f > max_v:
+            _LOGGER.error(
+                "CTS700 Nordic temp %s out of range %s..%s (address %s)",
+                celsius_f,
+                min_v,
+                max_v,
+                address,
+            )
+            return False
+        raw = int(round(celsius_f * _TEMP_SCALE))
         output = int.from_bytes(
             raw.to_bytes(2, "little", signed=True), "little", signed=False
         )
-        await self._write_holding(address, output)
-        return True
+
+        # FC6 (write single). HA may return None even when the unit accepted the write.
+        await self._modbus.async_pb_call(
+            self._unit_id, address, output, "write_register"
+        )
+        if await self._temp_matches(address, celsius_f):
+            return True
+
+        # FC16 fallback
+        await self._modbus.async_pb_call(
+            self._unit_id, address, [output], "write_registers"
+        )
+        if await self._temp_matches(address, celsius_f):
+            return True
+
+        _LOGGER.warning(
+            "CTS700 Nordic temp write address=%s wanted=%.1f did not stick",
+            address,
+            celsius_f,
+        )
+        return False
 
     async def _raw_operation_mode(self) -> int | None:
         """Raw Nordic operation mode from 5432."""
@@ -300,8 +359,7 @@ class DeviceCTS700Nordic:
         if mode not in (1, 2, 3, 4):
             _LOGGER.debug("Ignoring Nordic fan step %s (valid 1-4)", mode)
             return False
-        await self._write_holding(Reg.user_fan_step, 100 + mode)
-        return True
+        return await self._write_holding(Reg.user_fan_step, 100 + mode)
 
     async def get_control_state(self) -> int | None:
         """Approximate control state for climate action UI from raw 5432."""
@@ -334,9 +392,9 @@ class DeviceCTS700Nordic:
             _LOGGER.error("Could not read get_user_temperature_setpoint")
         return value
 
-    async def set_user_temperature_setpoint(self, value: float) -> None:
-        """Set room temperature setpoint."""
-        await self._write_temp(Reg.user_temperature, value, 5, 30)
+    async def set_user_temperature_setpoint(self, value: float) -> bool:
+        """Set room temperature setpoint (holding 4746)."""
+        return await self._write_temp(Reg.user_temperature, value, 5, 30)
 
     async def get_t1_intake_temperature(self) -> float | None:
         """Outdoor air temperature."""
@@ -426,20 +484,19 @@ class DeviceCTS700Nordic:
         """DHW setpoint."""
         return await self._read_temp_holding(Reg.hot_water_set_point)
 
-    async def set_electric_water_heater_setpoint(self, value: float) -> None:
-        """Set DHW setpoint."""
+    async def set_electric_water_heater_setpoint(self, value: float) -> bool:
+        """Set DHW setpoint (holding 20460)."""
         if value == 0:
-            await self._write_holding(Reg.hot_water_set_point, 0)
-            return
-        await self._write_temp(Reg.hot_water_set_point, value, 5, 85)
+            return await self._write_holding(Reg.hot_water_set_point, 0)
+        return await self._write_temp(Reg.hot_water_set_point, value, 5, 85)
 
     async def get_compressor_water_heater_setpoint(self) -> float | None:
         """Shared DHW setpoint."""
         return await self.get_electric_water_heater_setpoint()
 
-    async def set_compressor_water_heater_setpoint(self, value: float) -> None:
+    async def set_compressor_water_heater_setpoint(self, value: float) -> bool:
         """Set shared DHW setpoint."""
-        await self.set_electric_water_heater_setpoint(value)
+        return await self.set_electric_water_heater_setpoint(value)
 
     async def get_t11_electric_water_heater_temperature(self) -> float | None:
         """DHW top temperature."""

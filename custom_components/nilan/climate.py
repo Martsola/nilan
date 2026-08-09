@@ -181,7 +181,17 @@ class NilanClimate(NilanEntity, ClimateEntity):
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
-        await self._device.set_user_temperature_setpoint(kwargs[ATTR_TEMPERATURE])
+        temperature = kwargs.get(ATTR_TEMPERATURE)
+        if temperature is None:
+            return
+        ok = await self._device.set_user_temperature_setpoint(temperature)
+        if ok is False:
+            # Refresh from device so UI does not keep a rejected value
+            self._attr_target_temperature = (
+                await self._device.get_user_temperature_setpoint()
+            )
+        else:
+            self._attr_target_temperature = temperature
         self.async_write_ha_state()
 
     async def async_set_humidity(self, humidity):
