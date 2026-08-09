@@ -25,7 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 
 _TEMP_SCALE = 10
 
-# Nordic 5432: 0 off, 1 cool, 2 heat, 3 dehum, 4 DHW
+# Nordic holding 5432: 0 off, 1 cool, 2 heat, 3 dehum, 4 DHW
 # Climate layer: 1 heat, 2 cool, 3 auto
 _NORDIC_TO_CLIMATE = {1: 2, 2: 1, 3: 3, 4: 3}
 _CLIMATE_TO_NORDIC = {1: 2, 2: 1, 3: 3}
@@ -226,6 +226,14 @@ class DeviceCTS700Nordic:
         """Raw Nordic operation mode from 5432."""
         return await self._read_holding_unsigned(Reg.operation_mode)
 
+    def get_climate_fan_modes(self) -> list[str]:
+        """Nordic fan steps are 1-4 only (4747 = 101-104). No off via fan 0."""
+        return ["1", "2", "3", "4"]
+
+    def supports_water_heater_off(self) -> bool:
+        """Compact P Nordic shared DHW setpoint does not reliably accept 0 as Off."""
+        return False
+
     async def get_run_state(self) -> bool | None:
         """True when unit is not in off mode."""
         mode = await self._raw_operation_mode()
@@ -235,45 +243,64 @@ class DeviceCTS700Nordic:
         return mode != 0
 
     async def set_run_state(self, state: bool) -> None:
-        """Turn off (mode 0) or restore heat/cool auto (mode 3 dehum/auto)."""
-        if state:
-            await self._write_holding(Reg.operation_mode, 3)
-        else:
+        """Turn off (mode 0) or leave/restore a non-off mode without forcing cool."""
+        if not state:
             await self._write_holding(Reg.operation_mode, 0)
+            return
+        current = await self._raw_operation_mode()
+        if current in (None, 0):
+            # Default to heat (2) when starting from off; climate may overwrite next.
+            await self._write_holding(Reg.operation_mode, 2)
 
     async def get_operation_mode(self) -> int | None:
-        """Climate operation mode 1 heat / 2 cool / 3 auto."""
+        """Climate operation mode 1 heat / 2 cool / 3 auto from Nordic 5432."""
         raw = await self._raw_operation_mode()
         if raw is None:
             _LOGGER.error("Could not read get_operation_mode")
             return None
+        if raw == 0:
+            return 3
         return _NORDIC_TO_CLIMATE.get(raw, 3)
 
     async def set_operation_mode(self, mode: int) -> bool:
-        """Set climate operation mode (maps to Nordic 5432)."""
+        """Set climate operation mode (maps to Nordic holding 5432).
+
+        Some firmwares treat 5432 as status and may ignore or revert writes.
+        """
         if mode not in _CLIMATE_TO_NORDIC:
             return False
-        await self._write_holding(Reg.operation_mode, _CLIMATE_TO_NORDIC[mode])
+        nordic = _CLIMATE_TO_NORDIC[mode]
+        await self._write_holding(Reg.operation_mode, nordic)
+        verify = await self._raw_operation_mode()
+        if verify is not None and verify != nordic:
+            _LOGGER.warning(
+                "CTS700 Nordic HVAC mode write 5432=%s read back %s "
+                "(unit may keep active cool/heat status)",
+                nordic,
+                verify,
+            )
+            return False
         return True
 
     async def get_ventilation_step(self) -> int | None:
-        """Fan step 0-4 from holding 4747 values 101-104."""
+        """Fan step 1-4 from holding 4747 values 101-104."""
         value = await self._read_holding_unsigned(Reg.user_fan_step)
         if value is None:
             _LOGGER.error("Could not read get_ventilation_step")
             return None
         if 101 <= value <= 104:
             return value - 100
-        if value in (0, 1, 2, 3, 4):
+        if value in (1, 2, 3, 4):
             return value
-        return 0
+        # Step 0 / unknown: Nordic units do not expose fan-off on 4747
+        return 1
 
     async def set_ventilation_step(self, mode: int) -> bool:
-        """Write fan step as 101-104 (levels 1-4). Level 0 writes 101."""
-        if mode not in (0, 1, 2, 3, 4):
+        """Write fan step as 101-104 (levels 1-4 only)."""
+        if mode not in (1, 2, 3, 4):
+            _LOGGER.debug("Ignoring Nordic fan step %s (valid 1-4)", mode)
             return False
-        step = 1 if mode == 0 else mode
-        await self._write_holding(Reg.user_fan_step, 100 + step)
+        await self._write_holding(Reg.user_fan_step, 100 + mode)
         return True
 
     async def get_control_state(self) -> int | None:
@@ -333,8 +360,14 @@ class DeviceCTS700Nordic:
         return await self._read_temp_holding(Reg.t6_evaporator)
 
     async def get_t7_inlet_temperature_after_heater(self) -> float | None:
-        """Supply air after after-heater (T7, holding 20294)."""
-        return await self._read_temp_holding(Reg.t7_after_heater)
+        """Supply after after-heater (T7). None when register unused (~0 C)."""
+        value = await self._read_temp_holding(Reg.t7_after_heater)
+        if value is None:
+            return None
+        # Many Compact P Nordic/Polar units have no T7 sensor; bus returns 0.0
+        if abs(value) < 0.05:
+            return None
+        return value
 
     async def get_t8_outdoor_temperature(self) -> float | None:
         """Polar/Nordic preheater path / T8 (input 5159)."""

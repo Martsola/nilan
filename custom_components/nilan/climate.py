@@ -121,14 +121,22 @@ class NilanClimate(NilanEntity, ClimateEntity):
             HVACMode.OFF,
         ]
         self._attr_preset_modes = ["energy", "comfort", "water"]
-        self._attr_fan_modes = ["0", "1", "2", "3", "4"]
+        if hasattr(device, "get_climate_fan_modes"):
+            self._attr_fan_modes = device.get_climate_fan_modes()
+        else:
+            self._attr_fan_modes = ["0", "1", "2", "3", "4"]
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_supported_features = supported_featrures
         self._extra_status_attributes = extra_status_attributes
 
     async def async_set_fan_mode(self, fan_mode):
         """Set new target fan mode."""
-        await self._device.set_ventilation_step(int(fan_mode))
+        ok = await self._device.set_ventilation_step(int(fan_mode))
+        if ok is False and hasattr(self._device, "get_climate_fan_modes"):
+            # Keep UI on a valid Nordic step (1-4)
+            step = await self._device.get_ventilation_step()
+            if step is not None:
+                self._attr_fan_mode = str(step)
         self.async_write_ha_state()
 
     async def async_set_preset_mode(self, preset_mode):
@@ -141,11 +149,21 @@ class NilanClimate(NilanEntity, ClimateEntity):
         if hvac_mode == HVACMode.OFF:
             await self._device.set_run_state(False)
         else:
+            mode = STATE_TO_HVAC_MODE.get(hvac_mode)
             self._hvac_on = await self._device.get_run_state()
             if not self._hvac_on:
                 await self._device.set_run_state(True)
-            await self._device.set_operation_mode(STATE_TO_HVAC_MODE.get(hvac_mode))
-        self._attr_hvac_mode = hvac_mode
+            if mode is not None:
+                await self._device.set_operation_mode(mode)
+        # Refresh from device so UI matches readback (Nordic 5432 may revert)
+        self._hvac_on = await self._device.get_run_state()
+        if self._hvac_on is False:
+            self._attr_hvac_mode = HVACMode.OFF
+        else:
+            self._attr_hvac_mode = HVAC_MODE_TO_STATE.get(
+                await self._device.get_operation_mode(),
+                HVACMode.AUTO,
+            )
         self.async_write_ha_state()
 
     async def async_set_temperature(self, **kwargs):

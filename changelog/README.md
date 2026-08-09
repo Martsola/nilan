@@ -6,6 +6,7 @@ GitHub Releases: https://github.com/master3395/veista-nilan/releases
 
 | Version | Date | Summary | Notes |
 |---|---|---|---|
+| [1.3.7](1.3.7.md) | 09/08/2026 | Nordic UX: fan 1-4, HVAC, DHW Off, sensor names | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.7) |
 | [1.3.6](1.3.6.md) | 09/08/2026 | Polar/Nordic/Arctic XL hardware + T7/T9 | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.6) |
 | [1.3.5](1.3.5.md) | 09/08/2026 | CTS700 Nordic XL era + `modbus_yaml/` | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.5) |
 | [1.3.4](1.3.4.md) | 08/08/2026 | Full bolig + næring catalog matrices | Tag `1.3.4` |

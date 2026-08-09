@@ -97,7 +97,7 @@ ATTRIBUTE_TO_SENSORS = {
             UnitOfTemperature.CELSIUS,
             SensorDeviceClass.TEMPERATURE,
             SensorStateClass.MEASUREMENT,
-            None,
+            EntityCategory.DIAGNOSTIC,
             None,
             True,
         )
@@ -108,9 +108,9 @@ ATTRIBUTE_TO_SENSORS = {
             UnitOfTemperature.CELSIUS,
             SensorDeviceClass.TEMPERATURE,
             SensorStateClass.MEASUREMENT,
+            EntityCategory.DIAGNOSTIC,
             None,
-            None,
-            True,
+            False,
         )
     ],
     "get_t8_outdoor_temperature": [
@@ -130,7 +130,7 @@ ATTRIBUTE_TO_SENSORS = {
             UnitOfTemperature.CELSIUS,
             SensorDeviceClass.TEMPERATURE,
             SensorStateClass.MEASUREMENT,
-            None,
+            EntityCategory.DIAGNOSTIC,
             None,
             True,
         )
