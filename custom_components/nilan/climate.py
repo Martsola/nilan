@@ -114,12 +114,25 @@ class NilanClimate(NilanEntity, ClimateEntity):
         self._attr_max_temp = 30
         self._attr_target_temperature_step = 1
         self._enable_turn_on_off_backwards_compatibility = False
-        self._attr_hvac_modes = [
-            HVACMode.COOL,
-            HVACMode.HEAT,
-            HVACMode.AUTO,
-            HVACMode.OFF,
-        ]
+        if hasattr(device, "get_climate_hvac_modes"):
+            mode_map = {
+                "cool": HVACMode.COOL,
+                "heat": HVACMode.HEAT,
+                "auto": HVACMode.AUTO,
+                "off": HVACMode.OFF,
+            }
+            self._attr_hvac_modes = [
+                mode_map[m]
+                for m in device.get_climate_hvac_modes()
+                if m in mode_map
+            ]
+        else:
+            self._attr_hvac_modes = [
+                HVACMode.COOL,
+                HVACMode.HEAT,
+                HVACMode.AUTO,
+                HVACMode.OFF,
+            ]
         self._attr_preset_modes = ["energy", "comfort", "water"]
         if hasattr(device, "get_climate_fan_modes"):
             self._attr_fan_modes = device.get_climate_fan_modes()

@@ -230,6 +230,14 @@ class DeviceCTS700Nordic:
         """Nordic fan steps are 1-4 only (4747 = 101-104). No off via fan 0."""
         return ["1", "2", "3", "4"]
 
+    def get_climate_hvac_modes(self) -> list[str]:
+        """Selectable climate modes.
+
+        Holding 5432 reports active cool/heat/dehum/DHW as status on Compact P
+        Nordic; heat/cool writes do not stick as user setpoints. Keep Auto + Off.
+        """
+        return ["auto", "off"]
+
     def supports_water_heater_off(self) -> bool:
         """Compact P Nordic shared DHW setpoint does not reliably accept 0 as Off."""
         return False
@@ -243,43 +251,35 @@ class DeviceCTS700Nordic:
         return mode != 0
 
     async def set_run_state(self, state: bool) -> None:
-        """Turn off (mode 0) or leave/restore a non-off mode without forcing cool."""
+        """Turn off (mode 0) or restore auto/dehum (3) when starting from off."""
         if not state:
             await self._write_holding(Reg.operation_mode, 0)
             return
         current = await self._raw_operation_mode()
         if current in (None, 0):
-            # Default to heat (2) when starting from off; climate may overwrite next.
-            await self._write_holding(Reg.operation_mode, 2)
+            # 3 = dehum/auto path; controller then picks heat/cool itself
+            await self._write_holding(Reg.operation_mode, 3)
 
     async def get_operation_mode(self) -> int | None:
-        """Climate operation mode 1 heat / 2 cool / 3 auto from Nordic 5432."""
+        """Climate mode for HA mode selector (always auto when running).
+
+        Active heat/cool from 5432 is exposed via get_control_state / hvac_action.
+        """
         raw = await self._raw_operation_mode()
         if raw is None:
             _LOGGER.error("Could not read get_operation_mode")
             return None
-        if raw == 0:
-            return 3
-        return _NORDIC_TO_CLIMATE.get(raw, 3)
+        return 3
 
     async def set_operation_mode(self, mode: int) -> bool:
-        """Set climate operation mode (maps to Nordic holding 5432).
-
-        Some firmwares treat 5432 as status and may ignore or revert writes.
-        """
-        if mode not in _CLIMATE_TO_NORDIC:
-            return False
-        nordic = _CLIMATE_TO_NORDIC[mode]
-        await self._write_holding(Reg.operation_mode, nordic)
-        verify = await self._raw_operation_mode()
-        if verify is not None and verify != nordic:
-            _LOGGER.warning(
-                "CTS700 Nordic HVAC mode write 5432=%s read back %s "
-                "(unit may keep active cool/heat status)",
-                nordic,
-                verify,
+        """Accept Auto only; heat/cool are not user-writable setpoints on Nordic."""
+        if mode != 3:
+            _LOGGER.debug(
+                "Ignoring Nordic HVAC mode %s (selectable modes are auto/off only)",
+                mode,
             )
             return False
+        # Auto means leave controller strategy alone; do not force 5432 writes
         return True
 
     async def get_ventilation_step(self) -> int | None:
@@ -304,16 +304,19 @@ class DeviceCTS700Nordic:
         return True
 
     async def get_control_state(self) -> int | None:
-        """Approximate control state for climate action UI."""
+        """Approximate control state for climate action UI from raw 5432."""
         running = await self.get_run_state()
         if running is None:
             return None
         if not running:
             return 0
-        mode = await self.get_operation_mode()
-        if mode == 1:
+        raw = await self._raw_operation_mode()
+        if raw is None:
+            return None
+        # Nordic 5432: 1 cool, 2 heat, 3 dehum, 4 DHW
+        if raw == 2:
             return 7
-        if mode == 2:
+        if raw == 1:
             return 8
         return 6
 

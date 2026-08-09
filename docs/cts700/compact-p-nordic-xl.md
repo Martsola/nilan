@@ -73,7 +73,7 @@ External CO2 (accessory on SG A/B) stays out of this bus map unless you add a se
 - **Week programs** are not synced. HA writes can fight a week program still active on the controller.
 - Active cooling (compressor M6) depends on outdoor conditions and unit alarms; mode **Kjøling** alone does not guarantee compressor run.
 - Never copy Nordic step fan writes onto a 2018+ Compact P entry.
-- **HVAC mode (holding 5432):** climate maps heat/cool/auto to Nordic 2/1/3. Some firmwares treat 5432 more like status and may keep showing Cool after a write; check HA logs for readback warnings.
+- **HVAC mode (holding 5432):** treated as **status** (active cool/heat/dehum/DHW), not a user setpoint. Climate selectable modes are **Auto** and **Off** only; heat/cool still show under HVAC *action* when the unit is doing that. Steer comfort with room setpoint (**4746**) and fan step.
 - **Fan steps:** climate offers **1–4** only (4747 = 101–104). There is no fan-off via step 0 on these boards.
 - **DHW Off:** top/bottom water heaters share setpoint **20460**. Off via setpoint 0 is not reliable, so Nordic entities expose temperature only (no Off operation mode).
 - **Sensor names:** follow Nilan wiring (T1 outdoor, T6 evaporator, T7 after after-heater, T8 preheater path). T5/T6/T7/T9 are diagnostic; T7 is disabled by default when unused (often reads 0.0).
