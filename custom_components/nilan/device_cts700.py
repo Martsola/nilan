@@ -16,6 +16,7 @@ from .capabilities import (
     filter_attributes_by_capabilities,
 )
 from .device_map_cts700 import CTS700_ENTITY_MAP
+from .modbus_hub_util import build_modbus_hub_name
 from .registers import CTS700NewHoldingRegisters
 
 _LOGGER = logging.getLogger(__name__)
@@ -35,19 +36,23 @@ class DeviceCTS700:
         host_ip: str | None,
         host_port,
         unit_id,
+        hub_name: str | None = None,
     ) -> None:
         """Create CTS700 device."""
         self.hass = hass
         self._device_name = name
         self._device_type = "Compact P CTS700"
-        self._device_sw_ver = ""
+        self._device_sw_ver = "CTS700 Compact P 2018+ map"
         self._device_hw_ver = "CTS700"
         self._host_ip = host_ip
         self._host_port = host_port
         self._unit_id = int(unit_id)
         self._com_type = com_type
+        self._hub_name = hub_name or build_modbus_hub_name(
+            name, board_type="CTS700", unit_id=self._unit_id
+        )
         self._client_config = {
-            "name": self._device_name,
+            "name": self._hub_name,
             "type": self._com_type,
             "method": "rtu",
             "delay": 0,
@@ -62,6 +67,7 @@ class DeviceCTS700:
         self._modbus = modbus.ModbusHub(self.hass, self._client_config)
         self._attributes = {}
         self._board_type = "CTS700"
+        self._capabilities = frozenset()
 
     async def async_close(self):
         """Close modbus connection."""
@@ -98,7 +104,8 @@ class DeviceCTS700:
 
         outdoor = await self.get_t1_intake_temperature()
         if outdoor is not None:
-            self._device_sw_ver = f"probe outdoor {outdoor:.1f} C"
+            _LOGGER.debug("CTS700 outdoor probe %.1f C", outdoor)
+        self._device_sw_ver = "CTS700 Compact P 2018+ map"
         _LOGGER.debug("CTS700 attributes loaded: %s", list(self._attributes.keys()))
         _LOGGER.debug("CTS700 capabilities=%s", sorted(caps))
 

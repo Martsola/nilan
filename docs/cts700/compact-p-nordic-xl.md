@@ -76,7 +76,9 @@ External CO2 (accessory on SG A/B) stays out of this bus map unless you add a se
 - **HVAC mode (holding 5432):** treated as **status** (active cool/heat/dehum/DHW), not a user setpoint. Climate selectable modes are **Auto** and **Off** only; heat/cool still show under HVAC *action* when the unit is doing that. Steer comfort with room setpoint (**4746**) and fan step.
 - **Fan steps:** climate offers **1–4** only (4747 = 101–104). There is no fan-off via step 0 on these boards.
 - **DHW Off:** top/bottom water heaters share setpoint **20460**. Off via setpoint 0 is not reliable, so Nordic entities expose temperature only (no Off operation mode).
-- **Sensor names:** follow Nilan wiring (T1 outdoor, T6 evaporator, T7 after after-heater, T8 preheater path). T5/T6/T7/T9 are diagnostic; T7 is disabled by default when unused (often reads 0.0).
+- **Sensor names:** follow Nilan wiring (T1 outdoor, T6 evaporator, T7 after after-heater, T8 preheater path). T5/T6/T7/T8/T9 are diagnostic; T7 is disabled by default when unused (often reads 0.0).
+- **T1 vs T8:** different registers (input **5152** vs **5159**; optional holding **20296**). On Polar/Nordic both are outdoor / preheater-path NTCs, so equal readings with preheater idle are normal, not a double-map bug. If 5159 mirrors T1 but **20296** differs, the integration prefers **20296**.
+- **Extra percent sensors:** heat-pump effort % is useful if the unit exposes a live register (share address to add). Configured max DHW effort and per-filter % are low value when filter **days** already exist; keep those out of the default entity set.
 - **Setpoint writes:** room **4746** and DHW **20460** use Modbus **FC6** (`write_register`) first, same as HA YAML climate. Fan step **4747** may use FC16. If air/water temp UI snaps back, check HA logs for `CTS700 Nordic temp write`.
 
 ## Related

@@ -119,7 +119,7 @@ ATTRIBUTE_TO_SENSORS = {
             UnitOfTemperature.CELSIUS,
             SensorDeviceClass.TEMPERATURE,
             SensorStateClass.MEASUREMENT,
-            None,
+            EntityCategory.DIAGNOSTIC,
             None,
             True,
         )

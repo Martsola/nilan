@@ -697,6 +697,8 @@ class CTS700NordicRegisters:
     t6_evaporator = 20292  # T6 Fordamper
     t7_after_heater = 20294  # T7 Tilluft efter eftervarme
     t9_water_surface = 20298  # T9 Vandflade
+    # Alternate T8 on some Compact P firmwares (20xxx); prefer when 5159 mirrors T1
+    t8_before_preheater_holding = 20296
     fan_power_percent = 21771
     ventilation_pause = 20100  # optional; may work on hybrid units
 

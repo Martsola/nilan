@@ -19,6 +19,7 @@ from .device import Device
 from .device_cts700 import DeviceCTS700
 from .device_cts700_legacy import DeviceCTS700Legacy
 from .device_cts700_nordic import DeviceCTS700Nordic
+from .modbus_hub_util import build_modbus_hub_name
 
 PLATFORMS = [
     "binary_sensor",
@@ -45,15 +46,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     com_type = entry.data["com_type"]
     host_ip = entry.data["host_ip"]
     board_type = entry.data.get("board_type", "CTS602")
+    hub_name = build_modbus_hub_name(
+        name,
+        entry_id=entry.entry_id,
+        board_type=board_type,
+        unit_id=unit_id,
+    )
 
     if board_type == BOARD_TYPE_CTS700:
-        device = DeviceCTS700(hass, name, com_type, host_ip, host_port, unit_id)
+        device = DeviceCTS700(
+            hass, name, com_type, host_ip, host_port, unit_id, hub_name=hub_name
+        )
     elif board_type == BOARD_TYPE_CTS700_LEGACY:
-        device = DeviceCTS700Legacy(hass, name, com_type, host_ip, host_port, unit_id)
+        device = DeviceCTS700Legacy(
+            hass, name, com_type, host_ip, host_port, unit_id, hub_name=hub_name
+        )
     elif board_type == BOARD_TYPE_CTS700_NORDIC:
-        device = DeviceCTS700Nordic(hass, name, com_type, host_ip, host_port, unit_id)
+        device = DeviceCTS700Nordic(
+            hass, name, com_type, host_ip, host_port, unit_id, hub_name=hub_name
+        )
     else:
-        device = Device(hass, name, com_type, host_ip, host_port, unit_id)
+        device = Device(
+            hass, name, com_type, host_ip, host_port, unit_id, hub_name=hub_name
+        )
     try:
         await device.setup()
     except ValueError as ex:

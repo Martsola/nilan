@@ -16,6 +16,7 @@ from .capabilities import (
     filter_attributes_by_capabilities,
 )
 from .device_map_cts700_legacy import CTS700_LEGACY_ENTITY_MAP
+from .modbus_hub_util import build_modbus_hub_name
 from .registers import CTS700LegacyHoldingRegisters as Reg
 
 _LOGGER = logging.getLogger(__name__)
@@ -39,19 +40,23 @@ class DeviceCTS700Legacy:
         host_ip: str | None,
         host_port,
         unit_id,
+        hub_name: str | None = None,
     ) -> None:
         """Create CTS700 legacy device."""
         self.hass = hass
         self._device_name = name
         self._device_type = "CTS700 (2015 map)"
-        self._device_sw_ver = ""
+        self._device_sw_ver = "CTS700 2015 map"
         self._device_hw_ver = "CTS700"
         self._host_ip = host_ip
         self._host_port = host_port
         self._unit_id = int(unit_id)
         self._com_type = com_type
+        self._hub_name = hub_name or build_modbus_hub_name(
+            name, board_type="CTS700_LEGACY", unit_id=self._unit_id
+        )
         self._client_config = {
-            "name": self._device_name,
+            "name": self._hub_name,
             "type": self._com_type,
             "method": "rtu",
             "delay": 0,
@@ -66,6 +71,7 @@ class DeviceCTS700Legacy:
         self._modbus = modbus.ModbusHub(self.hass, self._client_config)
         self._attributes = {}
         self._board_type = "CTS700_LEGACY"
+        self._capabilities = frozenset()
 
     async def async_close(self):
         """Close modbus connection."""
@@ -100,7 +106,8 @@ class DeviceCTS700Legacy:
 
         outdoor = await self.get_t1_intake_temperature()
         if outdoor is not None:
-            self._device_sw_ver = f"2015 map; outdoor {outdoor:.1f} C"
+            _LOGGER.debug("CTS700 legacy outdoor probe %.1f C", outdoor)
+        self._device_sw_ver = "CTS700 2015 map"
         _LOGGER.debug(
             "CTS700 legacy attributes loaded: %s", list(self._attributes.keys())
         )

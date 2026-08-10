@@ -7,6 +7,20 @@ Different controller boards, register maps, and typical unit ids.
 - CTS602: often unit id **30**, RTU bridge or serial common
 - CTS700 Compact P: often unit id **1**, native Ethernet Modbus TCP on port **502**
 
+## Can YAML Modbus and this integration run together?
+
+**Not on the same unit.** Compact P / CTS700 often allow only one overlapping Modbus session. If both poll, you can see Control State flicker (Ventilation ↔ Unknown) or failed setpoint writes. Pause or remove the YAML Modbus file for that host before enabling Nilan (or the reverse).
+
+Also: do **not** name a YAML Modbus hub bare `nilan`. That name matches this integration’s domain and can blank config-flow menu labels. Use something like `nilan_compactpc` or `nilan_cts700` instead. The integration’s internal hub is always prefixed (`nilan_hub_…`) so it does not fight your YAML hub name.
+
+## Why were Select Controller Board labels blank?
+
+Usually a YAML Modbus hub named `nilan`. Rename the hub and reload Modbus / restart HA, then open Add integration → Nilan again. Upstream CTS602-only flows did not show the new board/confirm menus, so the clash was less visible there.
+
+## Why does Firmware show outdoor temperature?
+
+Older fork builds put a probe reading into the device software string. From **1.3.10** the Firmware field is a map label only (for example `CTS700 2015 map`). Outdoor temperature stays on the normal T1 / outdoor sensor.
+
 ## Can the integration auto-detect my board?
 
 Yes. After TCP or Serial, choose **Auto-detect**. Probe order: CTS602 `control_type` (1000), then CTS700 Nordic (holding **4747** in **101–104**), then CTS700 2018+ outdoor temp (20282), then CTS700 2015 T1+setpoint (5152 / 4746). Unit id **1** then **30** if you leave unit id empty. Confirm the result before the entry is created. You can still pick CTS602, CTS700 Nordic XL, CTS700 2018+, or CTS700 2015 manually.

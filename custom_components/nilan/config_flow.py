@@ -15,6 +15,7 @@ from .const import (
     BOARD_TYPE_CTS700_NORDIC,
     DOMAIN,
 )
+from .modbus_hub_util import coexistence_warning, find_conflicting_modbus_hub
 from .modbus_probe import (
     async_detect_board,
     async_validate_cts602,
@@ -26,7 +27,7 @@ from .modbus_probe import (
 
 STEP_TCP_CTS602_SCHEMA = vol.Schema(
     {
-        vol.Required("name", default="Nilan"): str,
+        vol.Required("name", default="Nilan CTS602"): str,
         vol.Required("host_ip"): str,
         vol.Required("host_port", default="502"): str,
         vol.Required("unit_id", default=30): int,
@@ -35,7 +36,7 @@ STEP_TCP_CTS602_SCHEMA = vol.Schema(
 
 STEP_TCP_CTS700_SCHEMA = vol.Schema(
     {
-        vol.Required("name", default="Nilan"): str,
+        vol.Required("name", default="Nilan CTS700"): str,
         vol.Required("host_ip"): str,
         vol.Required("host_port", default="502"): str,
         vol.Required("unit_id", default=1): int,
@@ -44,7 +45,7 @@ STEP_TCP_CTS700_SCHEMA = vol.Schema(
 
 STEP_SERIAL_CTS602_SCHEMA = vol.Schema(
     {
-        vol.Required("name", default="Nilan"): str,
+        vol.Required("name", default="Nilan CTS602"): str,
         vol.Required("host_port"): str,
         vol.Required("unit_id", default=30): int,
     }
@@ -52,7 +53,7 @@ STEP_SERIAL_CTS602_SCHEMA = vol.Schema(
 
 STEP_SERIAL_CTS700_SCHEMA = vol.Schema(
     {
-        vol.Required("name", default="Nilan"): str,
+        vol.Required("name", default="Nilan CTS700"): str,
         vol.Required("host_port"): str,
         vol.Required("unit_id", default=1): int,
     }
@@ -90,6 +91,15 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._detect_result: dict[str, Any] | None = None
         self._pending_user_input: dict[str, Any] | None = None
 
+    def _flow_placeholders(self) -> dict[str, str]:
+        """Shared description placeholders (warnings stay empty when OK)."""
+        warning = coexistence_warning(self.hass)
+        conflict = find_conflicting_modbus_hub(self.hass)
+        return {
+            "coexistence_warning": warning,
+            "hub_conflict": conflict or "",
+        }
+
     async def async_step_user(self, user_input: Optional[dict[str, Any]] = None):
         """Invoke when a user initiates a flow via the user interface."""
         return await self.async_step_menu(user_input)
@@ -99,6 +109,7 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_menu(
             step_id="menu",
             menu_options=["tcp", "serial"],
+            description_placeholders=self._flow_placeholders(),
         )
 
     async def async_step_tcp(self, user_input: Optional[dict[str, Any]] = None):
@@ -122,6 +133,7 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 "cts700_nordic",
                 "cts700_legacy",
             ],
+            description_placeholders=self._flow_placeholders(),
         )
 
     async def async_step_auto_detect(self, user_input: Optional[dict[str, Any]] = None):
@@ -164,6 +176,7 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="tcp_detect",
             data_schema=STEP_TCP_DETECT_SCHEMA,
             errors=errors,
+            description_placeholders=self._flow_placeholders(),
         )
 
     async def async_step_serial_detect(
@@ -202,40 +215,42 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="serial_detect",
             data_schema=STEP_SERIAL_DETECT_SCHEMA,
             errors=errors,
+            description_placeholders=self._flow_placeholders(),
         )
 
     async def async_step_confirm(self, user_input: Optional[dict[str, Any]] = None):
-        """Confirm auto-detect result or fall back to manual board choice."""
+        """Confirm auto-detect result (menu: accept / manual)."""
         detected = self._detect_result or {}
-        pending = self._pending_user_input or {}
-        if user_input is not None:
-            action = user_input.get("action", "accept")
-            if action == "manual":
-                self._detect_result = None
-                self._pending_user_input = None
-                return await self.async_step_board()
-            self.data = {
-                **pending,
-                "unit_id": detected["unit_id"],
-                "board_type": detected["board_type"],
-            }
-            return self.async_create_entry(title=pending["name"], data=self.data)
-
-        return self.async_show_form(
-            step_id="confirm",
-            data_schema=vol.Schema(
-                {
-                    vol.Required("action", default="accept"): vol.In(
-                        ["accept", "manual"]
-                    ),
-                }
-            ),
-            description_placeholders={
+        placeholders = self._flow_placeholders()
+        placeholders.update(
+            {
                 "board_type": str(detected.get("board_type", "")),
                 "model": str(detected.get("model", "")),
                 "unit_id": str(detected.get("unit_id", "")),
-            },
+            }
         )
+        return self.async_show_menu(
+            step_id="confirm",
+            menu_options=["accept", "manual"],
+            description_placeholders=placeholders,
+        )
+
+    async def async_step_accept(self, user_input: Optional[dict[str, Any]] = None):
+        """Create entry from successful auto-detect."""
+        pending = self._pending_user_input or {}
+        detected = self._detect_result or {}
+        self.data = {
+            **pending,
+            "unit_id": detected["unit_id"],
+            "board_type": detected["board_type"],
+        }
+        return self.async_create_entry(title=pending["name"], data=self.data)
+
+    async def async_step_manual(self, user_input: Optional[dict[str, Any]] = None):
+        """Fall back to manual board choice after auto-detect."""
+        self._detect_result = None
+        self._pending_user_input = None
+        return await self.async_step_board()
 
     async def async_step_cts602(self, user_input: Optional[dict[str, Any]] = None):
         """CTS602 selected; continue to connection form."""
@@ -317,7 +332,10 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.data.update({"board_type": board})
                 return self.async_create_entry(title=user_input["name"], data=self.data)
         return self.async_show_form(
-            step_id="tcp_config", data_schema=schema, errors=errors
+            step_id="tcp_config",
+            data_schema=schema,
+            errors=errors,
+            description_placeholders=self._flow_placeholders(),
         )
 
     async def async_step_serial_config(
@@ -359,5 +377,8 @@ class NilanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.data.update({"board_type": board})
                 return self.async_create_entry(title=user_input["name"], data=self.data)
         return self.async_show_form(
-            step_id="serial_config", data_schema=schema, errors=errors
+            step_id="serial_config",
+            data_schema=schema,
+            errors=errors,
+            description_placeholders=self._flow_placeholders(),
         )

@@ -9,6 +9,12 @@
 5. Choose **Auto-detect**, or board type **CTS602** / **CTS700 (2018+)** / **CTS700 Compact P Nordic XL** / **CTS700 (2015 legacy)** manually.
 6. Enter host, port, and unit id (see device docs). For auto-detect you may leave unit id empty (tries **1** then **30**).
 
+## Important: do not fight for the bus
+
+- Pause YAML Modbus for the same unit before adding Nilan (one Modbus client at a time on many Compact P boards).
+- Do not name a YAML Modbus hub `nilan` (use `nilan_compactpc` or similar). That name blanks some setup menu labels.
+- You can keep YAML for a *different* unit with a different hub name while Nilan manages another.
+
 ## HACS (this fork, custom repository)
 
 Use while testing CTS700 MVP and fork fixes before upstream merge:

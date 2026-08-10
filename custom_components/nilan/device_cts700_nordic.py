@@ -19,6 +19,7 @@ from .capabilities import (
     filter_attributes_by_capabilities,
 )
 from .device_map_cts700_nordic import CTS700_NORDIC_ENTITY_MAP
+from .modbus_hub_util import build_modbus_hub_name
 from .registers import CTS700NordicRegisters as Reg
 
 _LOGGER = logging.getLogger(__name__)
@@ -42,19 +43,23 @@ class DeviceCTS700Nordic:
         host_ip: str | None,
         host_port,
         unit_id,
+        hub_name: str | None = None,
     ) -> None:
         """Create Nordic hybrid device."""
         self.hass = hass
         self._device_name = name
         self._device_type = "Compact P Køl Polar/Nordic/Arctic XL CTS700"
-        self._device_sw_ver = ""
+        self._device_sw_ver = "CTS700 Nordic/Polar/Arctic hybrid map"
         self._device_hw_ver = "CTS700"
         self._host_ip = host_ip
         self._host_port = host_port
         self._unit_id = int(unit_id)
         self._com_type = com_type
+        self._hub_name = hub_name or build_modbus_hub_name(
+            name, board_type="CTS700_NORDIC", unit_id=self._unit_id
+        )
         self._client_config = {
-            "name": self._device_name,
+            "name": self._hub_name,
             "type": self._com_type,
             "method": "rtu",
             "delay": 0,
@@ -101,7 +106,8 @@ class DeviceCTS700Nordic:
 
         outdoor = await self.get_t1_intake_temperature()
         if outdoor is not None:
-            self._device_sw_ver = f"Nordic hybrid; outdoor {outdoor:.1f} C"
+            _LOGGER.debug("CTS700 Nordic outdoor probe %.1f C", outdoor)
+        self._device_sw_ver = "CTS700 Nordic/Polar/Arctic hybrid map"
         _LOGGER.debug(
             "CTS700 Nordic attributes=%s capabilities=%s",
             list(self._attributes.keys()),
@@ -431,8 +437,34 @@ class DeviceCTS700Nordic:
         return value
 
     async def get_t8_outdoor_temperature(self) -> float | None:
-        """Polar/Nordic preheater path / T8 (input 5159)."""
-        return await self._read_temp_input(Reg.t8_preheater)
+        """T8 outdoor / preheater path.
+
+        Primary: input 5159 (wiring T8). Some Compact P firmwares also expose
+        holding 20296. When 5159 tracks T1 exactly, try 20296 so HA is not
+        showing a duplicated outdoor reading by mistake.
+        """
+        t1 = await self.get_t1_intake_temperature()
+        t8_input = await self._read_temp_input(Reg.t8_preheater)
+        t8_hold = await self._read_temp_holding(Reg.t8_before_preheater_holding)
+
+        if t8_input is not None and t1 is not None and abs(t8_input - t1) < 0.15:
+            if t8_hold is not None and abs(t8_hold - t1) >= 0.15:
+                _LOGGER.debug(
+                    "CTS700 Nordic T8: input 5159 mirrors T1 (%.1f); using holding 20296 (%.1f)",
+                    t1,
+                    t8_hold,
+                )
+                return t8_hold
+            _LOGGER.debug(
+                "CTS700 Nordic T8 equals T1 (%.1f C); expected when both are outdoor "
+                "NTCs and preheater is idle",
+                t1,
+            )
+            return t8_input
+
+        if t8_input is not None:
+            return t8_input
+        return t8_hold
 
     async def get_t9_heater_temperature(self) -> float | None:
         """Water surface / after heater (T9, holding 20298)."""

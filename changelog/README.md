@@ -6,6 +6,7 @@ GitHub Releases: https://github.com/master3395/veista-nilan/releases
 
 | Version | Date | Summary | Notes |
 |---|---|---|---|
+| [1.3.10](1.3.10.md) | 10/08/2026 | Config UX, hub coexistence, firmware field | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.10) |
 | [1.3.9](1.3.9.md) | 10/08/2026 | Nordic room/DHW setpoints via Modbus FC6 | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.9) |
 | [1.3.8](1.3.8.md) | 10/08/2026 | Nordic HVAC Auto/Off only; heat/cool as status | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.8) |
 | [1.3.7](1.3.7.md) | 09/08/2026 | Nordic UX: fan 1-4, HVAC, DHW Off, sensor names | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.7) |

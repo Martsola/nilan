@@ -36,7 +36,7 @@ Active cooling hardware is listed (compressor M6, bypass M7, 4-way valve Y2). Po
 | T5 | Kondensator (diagnostic in HA) |
 | T6 | Fordamper / evaporator (diagnostic in HA) |
 | T7 | Tilluft efter eftervarme (optional; often unused) |
-| T8 | Udetemperatur / outdoor (preheat path on Polar/Nordic) |
+| T8 | Udetemperatur / outdoor (preheat path on Polar/Nordic; often matches T1 when preheater idle) |
 | T9 | Vandflade / water surface |
 | T10 | Ext. rumføler (accessory) |
 | T11 / T12 | Brugsvand top / bund |

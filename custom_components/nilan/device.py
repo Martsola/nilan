@@ -13,6 +13,7 @@ from .capabilities import (
     filter_attributes_by_capabilities,
 )
 from .device_map import CTS602_DEVICE_TYPES, CTS602_ENTITY_MAP
+from .modbus_hub_util import build_modbus_hub_name
 from .registers import CTS602HoldingRegisters, CTS602InputRegisters
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ class Device:
         host_ip: str | None,
         host_port,
         unit_id,
+        hub_name: str | None = None,
     ) -> None:
         """Create new entity of Device Class."""
         self.hass = hass
@@ -40,8 +42,11 @@ class Device:
         self._host_port = host_port
         self._unit_id = int(unit_id)
         self._com_type = com_type
+        self._hub_name = hub_name or build_modbus_hub_name(
+            name, board_type="CTS602", unit_id=self._unit_id
+        )
         self._client_config = {
-            "name": self._device_name,
+            "name": self._hub_name,
             "type": self._com_type,
             "method": "rtu",
             "delay": 0,
