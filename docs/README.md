@@ -4,11 +4,13 @@ Setup guides for each controller / model supported by this integration.
 
 ## Controllers
 
-| Controller | Status | Docs |
-|---|---|---|
-| [CTS602](cts602/README.md) | Stable | Full device list below |
-| [CTS700](cts700/README.md) | MVP (2015 / Nordic / 2018+) | [compact-p](cts700/compact-p.md) · [nordic-xl](cts700/compact-p-nordic-xl.md) · [legacy-2015](cts700/legacy-2015.md) · [geo](cts700/geo.md) |
-| [CTS400](naering/cts400.md) | Not implemented | Dump-gated |
+Years are **document / map eras**, not exact first-build dates.
+
+| Controller | Approx. years in use | Status | Docs |
+|---|---|---|---|
+| [CTS400](naering/cts400.md) | Older residential Comfort (named on some gateway docs with CTS602) | Not implemented | Dump-gated |
+| [CTS602](cts602/README.md) | **~2008–present** (Modbus PDF 12/09/2008; Compact P2 + commercial still) | Stable | Full device list below |
+| [CTS700](cts700/README.md) | **~2015–present** (2015 map, 2018 protocol, Nordic LC **2019**) | MVP (2015 / Nordic / 2018+) | [compact-p](cts700/compact-p.md) · [nordic-xl](cts700/compact-p-nordic-xl.md) · [legacy-2015](cts700/legacy-2015.md) · [geo](cts700/geo.md) |
 
 ## Product catalog (nilan.no)
 
@@ -29,6 +31,8 @@ Setup guides for each controller / model supported by this integration.
 - [Changelog (releases)](../changelog/README.md)
 
 ## CTS602 devices (HMI type names)
+
+All types below are on the **CTS602** board (~**2008–present**). Pick by HMI type id / plate, not calendar year.
 
 | HMI name | Type id | Guide |
 |---|---|---|
@@ -57,12 +61,12 @@ Setup guides for each controller / model supported by this integration.
 
 ## CTS700 devices
 
-| Model / map | Guide |
-|---|---|
-| Compact P (2018+ Ethernet) | [compact-p.md](cts700/compact-p.md) |
-| Compact P Nordic XL (hybrid) | [compact-p-nordic-xl.md](cts700/compact-p-nordic-xl.md) |
-| CTS700 2015 legacy | [legacy-2015.md](cts700/legacy-2015.md) |
-| GEO / slave 4 | [geo.md](cts700/geo.md) (dump-gated) |
+| Model / map | Map / hardware years | Guide |
+|---|---|---|
+| CTS700 2015 legacy | PDF **20150826** (~2015; under 10000) | [legacy-2015.md](cts700/legacy-2015.md) |
+| Compact P Nordic XL (hybrid) | LC drawings **2019**; fan **4747** = **101–104** | [compact-p-nordic-xl.md](cts700/compact-p-nordic-xl.md) |
+| Compact P (2018+ Ethernet) | Protocol PDF **2018_04** (~2018–present) | [compact-p.md](cts700/compact-p.md) |
+| GEO / slave 4 | Same CTS700 eras when fitted | [geo.md](cts700/geo.md) (dump-gated) |
 
 ## Contributing and license
 

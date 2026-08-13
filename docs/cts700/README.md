@@ -6,11 +6,11 @@ Support for Nilan **CTS700** controllers over Modbus (Ethernet TCP or Serial).
 
 All eras share Home Assistant platforms (`climate`, `sensor`, …) and the same config flow, but **each board owns its fan and setpoint writers**. Only one `board_type` is stored per config entry.
 
-| Era | Board choice in HA | Fan write | Room setpoint | Room current | Guide |
-|---|---|---|---|---|---|
-| **2015** legacy | CTS700 (2015 legacy map) | **4747** percent 0–100 | **4746** | classic T3 / master | [legacy-2015.md](legacy-2015.md) |
-| **Nordic** hybrid | CTS700 Compact P Nordic XL | **4747** steps **101–104** | **4746** | input **5154** | [compact-p-nordic-xl.md](compact-p-nordic-xl.md) |
-| **2018+** Compact P | CTS700 (2018+ / Compact P) | **21771** percent | **20102** | **20286** | [compact-p.md](compact-p.md) |
+| Era | Doc / hardware years | Board choice in HA | Fan write | Room setpoint | Room current | Guide |
+|---|---|---|---|---|---|---|
+| **2015** legacy | PDF **20150826** | CTS700 (2015 legacy map) | **4747** percent 0–100 | **4746** | classic T3 / master | [legacy-2015.md](legacy-2015.md) |
+| **Nordic** hybrid | LC drawings **2019** | CTS700 Compact P Nordic XL | **4747** steps **101–104** | **4746** | input **5154** | [compact-p-nordic-xl.md](compact-p-nordic-xl.md) |
+| **2018+** Compact P | Protocol PDF **2018_04** | CTS700 (2018+ / Compact P) | **21771** percent | **20102** | **20286** | [compact-p.md](compact-p.md) |
 
 Catalog Compact P XL Nordic may also be **CTS602** type 44: [../catalog/compact-p-xl-nordic.md](../catalog/compact-p-xl-nordic.md).
 
