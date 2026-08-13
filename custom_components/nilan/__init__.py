@@ -118,6 +118,15 @@ class NilanEntity(Entity):
         """Initialize the instance."""
         self._device = device
 
+    def make_unique_id(self, name: str) -> str:
+        """Build a unique id scoped to the device, so multiple units do not collide.
+
+        Uses the entry-derived hub name (sanitized entry_id), which is stable
+        across reloads and unique even for two identical units set up with the
+        same user-facing name/type.
+        """
+        return f"{self._device.get_hub_name}_{name}"
+
     @property
     def device_info(self):
         """Device Info."""
@@ -132,5 +141,4 @@ class NilanEntity(Entity):
             "model": self._device.get_device_type,
             "sw_version": self._device.get_device_sw_version,
             "hw_version": str(self._device.get_device_hw_version),
-            "suggested_area": "Boiler Room",
         }

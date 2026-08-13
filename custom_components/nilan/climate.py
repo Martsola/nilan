@@ -106,7 +106,7 @@ class NilanClimate(NilanEntity, ClimateEntity):
         super().__init__(device)
         self._attr_translation_key = "hvac"
         self._attr_has_entity_name = True
-        self._attr_unique_id = "hvac"
+        self._attr_unique_id = self.make_unique_id("hvac")
         self._hvac_on = False
         self._attr_max_humidity = 45
         self._attr_min_humidity = 15
