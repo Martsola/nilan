@@ -7,13 +7,47 @@ prefixed hub name for the private ModbusHub created by Nilan devices.
 
 from __future__ import annotations
 
+import asyncio
+import logging
 from typing import Any
 
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
 
+_LOGGER = logging.getLogger(__name__)
+
+# Bound connect wait so an offline unit does not stall HA startup.
+# ModbusHub reconnects in the background; without a timeout,
+# ``event_connected.wait()`` blocks ``async_setup_entry`` indefinitely.
+SETUP_CONNECT_TIMEOUT = 15.0
+
 _RESERVED_HUB_NAMES = frozenset({"nilan", "modbus", DOMAIN})
+
+
+async def wait_for_modbus_connected(
+    modbus: Any,
+    *,
+    timeout: float = SETUP_CONNECT_TIMEOUT,
+) -> None:
+    """Wait until the hub is connected, or raise ValueError after timeout.
+
+    On timeout the hub is closed so background reconnect stops. Callers
+    should map ValueError to ``ConfigEntryNotReady``.
+    """
+    try:
+        await asyncio.wait_for(modbus.event_connected.wait(), timeout=timeout)
+    except asyncio.TimeoutError as err:
+        _LOGGER.warning(
+            "Nilan Modbus connect timed out after %.0fs (unit offline or "
+            "unreachable); setup will retry without blocking HA startup",
+            timeout,
+        )
+        try:
+            await modbus.async_close()
+        except Exception:  # noqa: BLE001 - best-effort cleanup
+            _LOGGER.debug("Modbus close after connect timeout failed", exc_info=True)
+        raise ValueError("cannot_connect") from err
 
 
 def sanitize_hub_token(value: str | None, fallback: str = "device") -> str:

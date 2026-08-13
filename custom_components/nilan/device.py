@@ -13,7 +13,7 @@ from .capabilities import (
     filter_attributes_by_capabilities,
 )
 from .device_map import CTS602_DEVICE_TYPES, CTS602_ENTITY_MAP
-from .modbus_hub_util import build_modbus_hub_name
+from .modbus_hub_util import build_modbus_hub_name, wait_for_modbus_connected
 from .registers import CTS602HoldingRegisters, CTS602InputRegisters
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ class Device:
         success = await self._modbus.async_setup()
 
         if success:
-            await self._modbus.event_connected.wait()
+            await wait_for_modbus_connected(self._modbus)
             _LOGGER.debug("Modbus has been setup")
         else:
             await self._modbus.async_close()

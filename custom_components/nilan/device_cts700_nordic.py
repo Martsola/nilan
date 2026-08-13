@@ -19,7 +19,7 @@ from .capabilities import (
     filter_attributes_by_capabilities,
 )
 from .device_map_cts700_nordic import CTS700_NORDIC_ENTITY_MAP
-from .modbus_hub_util import build_modbus_hub_name
+from .modbus_hub_util import build_modbus_hub_name, wait_for_modbus_connected
 from .registers import CTS700NordicRegisters as Reg
 
 _LOGGER = logging.getLogger(__name__)
@@ -85,7 +85,7 @@ class DeviceCTS700Nordic:
         _LOGGER.debug("CTS700 Nordic setup started")
         success = await self._modbus.async_setup()
         if success:
-            await self._modbus.event_connected.wait()
+            await wait_for_modbus_connected(self._modbus)
         else:
             await self._modbus.async_close()
             raise ValueError("Modbus setup was unsuccessful")

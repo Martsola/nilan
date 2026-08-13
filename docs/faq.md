@@ -17,6 +17,14 @@ Also: do **not** name a YAML Modbus hub bare `nilan`. That name matches this int
 
 Usually a YAML Modbus hub named `nilan`. Rename the hub and reload Modbus / restart HA, then open Add integration → Nilan again. Upstream CTS602-only flows did not show the new board/confirm menus, so the clash was less visible there.
 
+## Does an offline Nilan block Home Assistant startup?
+
+Older builds waited forever for Modbus `event_connected` during setup, so HA looked stuck if the unit was unreachable. From **1.3.11** connect wait is capped (~15s), then the entry raises `ConfigEntryNotReady` and HA continues; Nilan retries in the background when the network/unit is back.
+
+## Can I run two Nilan units in one Home Assistant?
+
+Yes from **1.3.11**. Entity `unique_id` values are scoped per config entry (hub name), so sensors like `hvac` / `control_state` no longer collide across units. Give each unit a clear device name in the config flow. Do not point two integrations (or YAML Modbus + this integration) at the same Modbus TCP session.
+
 ## Why does Firmware show outdoor temperature?
 
 Older fork builds put a probe reading into the device software string. From **1.3.10** the Firmware field is a map label only (for example `CTS700 2015 map`). Outdoor temperature stays on the normal T1 / outdoor sensor.
