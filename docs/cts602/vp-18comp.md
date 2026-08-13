@@ -23,6 +23,7 @@ Use a Modbus RTU↔TCP bridge or USB-RS485. See [hardware](../hardware.md).
 ## Expected behaviour
 
 - Climate, sensors, and related platforms load based on bus version and hardware options.
+- From **1.3.12** (upstream [veista/nilan#234](https://github.com/veista/nilan/pull/234)): electric and compressor **water heater** entities appear (type **11** was missing from compressor DHW setpoint, which blocked both). Bypass flap and other verified sensors are enabled; disable optional ones you do not have fitted.
 - Unsupported optional sensors (for example CO2 without a module) can be hidden in the UI.
 
 

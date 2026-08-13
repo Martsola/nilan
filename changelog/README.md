@@ -6,6 +6,7 @@ GitHub Releases: https://github.com/master3395/veista-nilan/releases
 
 | Version | Date | Summary | Notes |
 |---|---|---|---|
+| [1.3.12](1.3.12.md) | 14/08/2026 | VP 18comp (type 11) entity mapping (#234) | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.12) |
 | [1.3.11](1.3.11.md) | 14/08/2026 | Non-blocking setup + multi-unit unique IDs | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.11) |
 | [1.3.10](1.3.10.md) | 10/08/2026 | Config UX, hub coexistence, firmware field | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.10) |
 | [1.3.9](1.3.9.md) | 10/08/2026 | Nordic room/DHW setpoints via Modbus FC6 | [Release](https://github.com/master3395/veista-nilan/releases/tag/v1.3.9) |

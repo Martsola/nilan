@@ -7,6 +7,7 @@ Thanks to everyone who reports bugs, shares dumps, and opens pull requests on th
 | Contributor | Contributions |
 |---|---|
 | [Martsola](https://github.com/Martsola) (Mikko Martsola) | Multi-unit hub-scoped `unique_id`s, drop hardcoded `suggested_area` ([#1](https://github.com/master3395/veista-nilan/pull/1)); CompactPC GEO XL + Comfort CT200 feedback |
+| [DUC750](https://github.com/DUC750) | VP 18comp (`hw_type` 11) entity mapping + German T5 condenser label ([veista/nilan#234](https://github.com/veista/nilan/pull/234), ported in 1.3.12) |
 
 ## Feedback and testing
 
