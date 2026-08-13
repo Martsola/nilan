@@ -93,7 +93,7 @@ class NilanCTS602Switch(SwitchEntity, NilanEntity):
         self._on_value = on_value
         self._attr_translation_key = self._name
         self._attr_has_entity_name = True
-        self._attr_unique_id = self._name
+        self._attr_unique_id = self.make_unique_id(self._name)
 
     @property
     def icon(self) -> str | None:

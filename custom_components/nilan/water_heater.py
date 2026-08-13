@@ -60,7 +60,7 @@ class NilanTopWaterHeater(NilanEntity, WaterHeaterEntity):
             self._attr_current_operation = STATE_ELECTRIC
         self._attr_translation_key = "top_water_heater"
         self._attr_has_entity_name = True
-        self._attr_unique_id = "top_water_heater"
+        self._attr_unique_id = self.make_unique_id("top_water_heater")
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
@@ -155,7 +155,7 @@ class NilanBottomWaterHeater(NilanEntity, WaterHeaterEntity):
             self._attr_current_operation = STATE_HEAT_PUMP
         self._attr_translation_key = "bottom_water_heater"
         self._attr_has_entity_name = True
-        self._attr_unique_id = "bottom_water_heater"
+        self._attr_unique_id = self.make_unique_id("bottom_water_heater")
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""

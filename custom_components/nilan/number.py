@@ -682,7 +682,7 @@ class NilanCTS602Number(NumberEntity, NilanEntity):
         self._name = name
         self._attr_translation_key = self._name
         self._attr_has_entity_name = True
-        self._attr_unique_id = self._name
+        self._attr_unique_id = self.make_unique_id(self._name)
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""

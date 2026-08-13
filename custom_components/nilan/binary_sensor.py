@@ -199,7 +199,7 @@ class NilanCTS602BinarySensor(BinarySensorEntity, NilanEntity):
         self._attr_entity_registry_enabled_default = enabled
         self._attr_has_entity_name = True
         self._attr_translation_key = self._name
-        self._attr_unique_id = self._name
+        self._attr_unique_id = self.make_unique_id(self._name)
 
     @property
     def icon(self) -> str | None:

@@ -118,6 +118,10 @@ class NilanEntity(Entity):
         """Initialize the instance."""
         self._device = device
 
+    def make_unique_id(self, name: str) -> str:
+        """Build a unique id scoped to the device, so multiple units do not collide."""
+        return f"{self._device.get_device_name}_{self._device.get_device_type}_{name}"
+
     @property
     def device_info(self):
         """Device Info."""

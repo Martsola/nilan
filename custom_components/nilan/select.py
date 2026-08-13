@@ -350,7 +350,7 @@ class NilanCTS602Select(SelectEntity, NilanEntity):
         self._name = name
         self._attr_has_entity_name = True
         self._attr_translation_key = self._name
-        self._attr_unique_id = self._name
+        self._attr_unique_id = self.make_unique_id(self._name)
 
     @property
     def options(self) -> list[str]:
@@ -390,7 +390,7 @@ class NilanCTS602AlarmSelect(SelectEntity, NilanEntity):
         self._attr_entity_category = EntityCategory.CONFIG
         self._attr_has_entity_name = True
         self._attr_translation_key = self._name
-        self._attr_unique_id = self._name
+        self._attr_unique_id = self.make_unique_id(self._name)
         self._attribute_1 = attribute_1
         self._attribute_2 = attribute_2
         self._attribute_3 = attribute_3
