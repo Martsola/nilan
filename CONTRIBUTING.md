@@ -105,3 +105,8 @@ Open a GitHub issue with the **Unsupported device / register dump** template.
 ## License
 
 By contributing, you agree that your contributions are licensed under the same [Apache License 2.0](LICENSE) as the project.
+
+## Contributors
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for people who shipped code or high-signal testing on this fork (including [Martsola](https://github.com/Martsola) and [mark007](https://github.com/mark007)).
+
