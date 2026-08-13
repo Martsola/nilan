@@ -119,8 +119,13 @@ class NilanEntity(Entity):
         self._device = device
 
     def make_unique_id(self, name: str) -> str:
-        """Build a unique id scoped to the device, so multiple units do not collide."""
-        return f"{self._device.get_device_name}_{self._device.get_device_type}_{name}"
+        """Build a unique id scoped to the device, so multiple units do not collide.
+
+        Uses the entry-derived hub name (sanitized entry_id), which is stable
+        across reloads and unique even for two identical units set up with the
+        same user-facing name/type.
+        """
+        return f"{self._device.get_hub_name}_{name}"
 
     @property
     def device_info(self):

@@ -124,6 +124,11 @@ class DeviceCTS700Nordic:
         return self._device_name
 
     @property
+    def get_hub_name(self):
+        """Stable entry-derived modbus hub name."""
+        return self._hub_name
+
+    @property
     def get_device_type(self):
         """Device type."""
         return self._device_type
