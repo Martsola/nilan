@@ -16,7 +16,7 @@ from .capabilities import (
     filter_attributes_by_capabilities,
 )
 from .device_map_cts700_legacy import CTS700_LEGACY_ENTITY_MAP
-from .modbus_hub_util import build_modbus_hub_name
+from .modbus_hub_util import build_modbus_hub_name, wait_for_modbus_connected
 from .registers import CTS700LegacyHoldingRegisters as Reg
 
 _LOGGER = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class DeviceCTS700Legacy:
         _LOGGER.debug("CTS700 legacy setup started")
         success = await self._modbus.async_setup()
         if success:
-            await self._modbus.event_connected.wait()
+            await wait_for_modbus_connected(self._modbus)
             _LOGGER.debug("CTS700 legacy Modbus has been setup")
         else:
             await self._modbus.async_close()

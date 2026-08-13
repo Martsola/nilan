@@ -16,7 +16,7 @@ from .capabilities import (
     filter_attributes_by_capabilities,
 )
 from .device_map_cts700 import CTS700_ENTITY_MAP
-from .modbus_hub_util import build_modbus_hub_name
+from .modbus_hub_util import build_modbus_hub_name, wait_for_modbus_connected
 from .registers import CTS700NewHoldingRegisters
 
 _LOGGER = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ class DeviceCTS700:
         _LOGGER.debug("CTS700 setup started")
         success = await self._modbus.async_setup()
         if success:
-            await self._modbus.event_connected.wait()
+            await wait_for_modbus_connected(self._modbus)
             _LOGGER.debug("CTS700 Modbus has been setup")
         else:
             await self._modbus.async_close()

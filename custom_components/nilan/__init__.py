@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
+from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import Entity
 
 from .const import (
@@ -33,6 +37,50 @@ PLATFORMS = [
 ]
 
 _LOGGER = logging.getLogger(__name__)
+
+
+async def _async_migrate_unique_ids(
+    hass: HomeAssistant, entry: ConfigEntry, hub_name: str, device: Any
+) -> None:
+    """Migrate bare entity unique_ids and device identifiers to hub scope.
+
+    Pre-1.3.11 entities used unique_id = bare name (``hvac``, ``humidity``, ...),
+    which collides across multiple config entries. Hub-scoped ids keep history.
+    """
+    prefix = f"{hub_name}_"
+
+    @callback
+    def _update_unique_id(
+        entity_entry: er.RegistryEntry,
+    ) -> dict[str, str] | None:
+        uid = entity_entry.unique_id
+        if uid.startswith(prefix):
+            return None
+        # Already hub-scoped (reload after entry_id-stable rename)
+        if uid.startswith("nilan_hub_"):
+            return None
+        return {"new_unique_id": f"{prefix}{uid}"}
+
+    await er.async_migrate_entries(hass, entry.entry_id, _update_unique_id)
+
+    old_device_key = f"{device.get_device_name}{device.get_device_type}"
+    new_identifiers = {(DOMAIN, hub_name)}
+    if old_device_key == hub_name:
+        return
+
+    dev_reg = dr.async_get(hass)
+    old_device = dev_reg.async_get_device(identifiers={(DOMAIN, old_device_key)})
+    if old_device is None:
+        return
+
+    identifiers = set(old_device.identifiers)
+    identifiers.discard((DOMAIN, old_device_key))
+    identifiers |= new_identifiers
+    dev_reg.async_update_device(old_device.id, new_identifiers=identifiers)
+    _LOGGER.info(
+        "Migrated Nilan device identifiers to hub-scoped id %s",
+        hub_name,
+    )
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -71,8 +119,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
     try:
         await device.setup()
-    except ValueError as ex:
-        raise ConfigEntryNotReady(f"Timeout while connecting {host_ip}") from ex
+    except (ValueError, OSError, TimeoutError, asyncio.TimeoutError) as ex:
+        try:
+            await device.async_close()
+        except Exception:  # noqa: BLE001 - best-effort cleanup
+            _LOGGER.debug("Device close after setup failure failed", exc_info=True)
+        raise ConfigEntryNotReady(
+            f"Unable to connect to Nilan at {host_ip}:{host_port}; will retry"
+        ) from ex
+
+    await _async_migrate_unique_ids(hass, entry, hub_name, device)
     hass.data[DOMAIN][entry.entry_id] = device
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -130,11 +186,9 @@ class NilanEntity(Entity):
     @property
     def device_info(self):
         """Device Info."""
-        unique_id = self._device.get_device_name + self._device.get_device_type
-
         return {
             "identifiers": {
-                (DOMAIN, unique_id),
+                (DOMAIN, self._device.get_hub_name),
             },
             "name": self._device.get_device_name,
             "manufacturer": "Nilan",
