@@ -4,7 +4,7 @@
 
 Modbus TCP/RTU integration for Nilan ventilation and Compact units in Home Assistant.
 
-[Docs](docs/README.md) · [Changelog](changelog/README.md) · [Installation](docs/installation.md) · [Dashboards](docs/dashboards.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Accessibility](ACCESSIBILITY.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [License](LICENSE)
+[Docs](docs/README.md) · [Changelog](changelog/README.md) · [Installation](docs/installation.md) · [Dashboards](docs/dashboards.md) · [Contributing](CONTRIBUTING.md) · [Contributors](CONTRIBUTORS.md) · [Security](SECURITY.md) · [Accessibility](ACCESSIBILITY.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [License](LICENSE)
 
 ## Vision (this fork)
 
@@ -93,6 +93,14 @@ All rows are **CTS602 HMI type ids** on the CTS602 board path (~**2008–present
 MVP covers room climate, fan, temps, humidity, and DHW setpoint. Not full CTS700 family support yet. On 2018+ Compact P, do not use register **20260** as room current; keep fan on **21771** (never Nordic **4747** steps). Tracking: [veista/nilan#19](https://github.com/veista/nilan/issues/19).
 
 Full SKU coverage: [docs/catalog/bolig-matrix.md](docs/catalog/bolig-matrix.md) · [docs/catalog/naering-matrix.md](docs/catalog/naering-matrix.md).
+
+## Contributors
+
+GitHub’s About sidebar on this fork may show “No contributors” even though commit authors are present (API / Insights still list them). Avatars below come from the public contributors API via [contrib.rocks](https://contrib.rocks).
+
+[![Contributors](https://contrib.rocks/image?repo=master3395/veista-nilan)](https://github.com/master3395/veista-nilan/graphs/contributors)
+
+Named credits (including feedback that is not in git history): [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## Support
 
