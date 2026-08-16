@@ -56,6 +56,19 @@ def _install_modbus_stub():
 
 _install_modbus_stub()
 
+# Dev env runs HA 2024.3.3, which lacks UnitOfRatio (added in a later HA
+# release). sensor.py / number.py import it from homeassistant.const at
+# module load, so without this shim those imports fail in the dev env.
+# On the user's real HA (2026.8.2) UnitOfRatio exists and the shim is skipped.
+import homeassistant.const as ha_const
+
+if not hasattr(ha_const, "UnitOfRatio"):
+
+    class _UnitOfRatioShim:
+        PARTS_PER_MILLION = "ppm"
+
+    ha_const.UnitOfRatio = _UnitOfRatioShim
+
 from custom_components.nilan.device_cts700 import DeviceCTS700
 from custom_components.nilan.device_cts700_legacy import DeviceCTS700Legacy
 from custom_components.nilan.device_cts700_nordic import DeviceCTS700Nordic
