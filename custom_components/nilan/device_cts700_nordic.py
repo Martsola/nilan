@@ -511,8 +511,27 @@ class DeviceCTS700Nordic:
         return float(value)
 
     async def get_days_to_air_filter_change(self) -> int | None:
-        """Days until filter change."""
+        """Days until filter change (holding 1328 remaining; 20103 fallback)."""
+        remaining = await self._read_holding_unsigned(Reg.filter_remaining_inlet)
+        if remaining is not None:
+            return remaining
         return await self._read_holding_unsigned(Reg.filter_days)
+
+    async def get_days_since_air_filter_change(self) -> int | None:
+        """Days since last filter change (interval - remaining)."""
+        interval = await self._read_holding_unsigned(Reg.filter_interval_inlet)
+        remaining = await self._read_holding_unsigned(Reg.filter_remaining_inlet)
+        if interval is None or remaining is None:
+            return None
+        return max(0, interval - remaining)
+
+    async def get_filter_interval_inlet(self) -> int | None:
+        """Inlet filter interval in days (holding 1326)."""
+        return await self._read_holding_unsigned(Reg.filter_interval_inlet)
+
+    async def get_filter_interval_exhaust(self) -> int | None:
+        """Exhaust filter interval in days (holding 1327)."""
+        return await self._read_holding_unsigned(Reg.filter_interval_exhaust)
 
     async def get_filter_alarm_state(self) -> bool | None:
         """Filter alarm active (input 5168)."""

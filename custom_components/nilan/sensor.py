@@ -311,6 +311,28 @@ ATTRIBUTE_TO_SENSORS = {
             True,
         )
     ],
+    "get_filter_interval_inlet": [
+        Map(
+            "filter_interval_inlet",
+            UnitOfTime.DAYS,
+            None,
+            SensorStateClass.MEASUREMENT,
+            EntityCategory.DIAGNOSTIC,
+            "mdi:filter-variant",
+            True,
+        )
+    ],
+    "get_filter_interval_exhaust": [
+        Map(
+            "filter_interval_exhaust",
+            UnitOfTime.DAYS,
+            None,
+            SensorStateClass.MEASUREMENT,
+            EntityCategory.DIAGNOSTIC,
+            "mdi:filter-variant",
+            True,
+        )
+    ],
     "get_summer_state": [
         Map(
             "climate_season",

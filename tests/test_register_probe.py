@@ -66,3 +66,56 @@ async def test_nordic_supports_attribute(make_fake_device):
     device._unsupported_attributes = {"get_average_humidity"}
     assert not device.supports_attribute("get_average_humidity")
     assert device.supports_attribute("get_t1_intake_temperature")
+
+
+async def test_filter_days_to_remaining(make_fake_device):
+    device = make_fake_device({("holding", 1328): 17, ("holding", 1326): 90})
+    assert await device.get_days_to_air_filter_change() == 17
+
+
+async def test_filter_days_to_fallback_20103(make_fake_device):
+    # 1328 dead, 20103 live (variant with legacy-style register)
+    device = make_fake_device({("holding", 20103): 17})
+    device._dead_registers = {("holding", 1328)}
+    assert await device.get_days_to_air_filter_change() == 17
+    assert ("holding", 20103) in [c for c in device._modbus.calls]
+
+
+async def test_filter_days_since_math(make_fake_device):
+    device = make_fake_device({("holding", 1326): 90, ("holding", 1328): 17})
+    assert await device.get_days_since_air_filter_change() == 73
+
+
+async def test_filter_intervals(make_fake_device):
+    device = make_fake_device({("holding", 1326): 90, ("holding", 1327): 90})
+    assert await device.get_filter_interval_inlet() == 90
+    assert await device.get_filter_interval_exhaust() == 90
+
+
+async def test_days_since_returns_none_when_interval_missing(make_fake_device):
+    device = make_fake_device({("holding", 1328): 17})
+    device._dead_registers = {("holding", 1326)}
+    assert await device.get_days_since_air_filter_change() is None
+
+
+async def test_nordic_map_has_filter_entities():
+    from custom_components.nilan.device_map_cts700_nordic import (
+        CTS700_NORDIC_ENTITY_MAP,
+    )
+    for name in (
+        "get_days_to_air_filter_change",
+        "get_days_since_air_filter_change",
+        "get_filter_interval_inlet",
+        "get_filter_interval_exhaust",
+    ):
+        assert name in CTS700_NORDIC_ENTITY_MAP
+
+
+async def test_sensor_maps_have_filter_entities():
+    from custom_components.nilan.sensor import ATTRIBUTE_TO_SENSORS
+    for name in (
+        "get_days_since_air_filter_change",
+        "get_filter_interval_inlet",
+        "get_filter_interval_exhaust",
+    ):
+        assert name in ATTRIBUTE_TO_SENSORS

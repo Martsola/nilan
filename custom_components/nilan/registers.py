@@ -690,6 +690,10 @@ class CTS700NordicRegisters:
 
     # Holding 20xxx / shared (same Compact P addresses as 2018 PDF extras)
     filter_days = 20103
+    filter_interval_inlet = 1326
+    filter_interval_exhaust = 1327
+    filter_remaining_inlet = 1328
+    filter_remaining_exhaust = 1329
     average_humidity = 20164
     hot_water_set_point = 20460
     t4_exhaust = 20288  # T4 Afgang veksler
