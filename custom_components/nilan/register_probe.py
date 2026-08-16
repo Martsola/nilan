@@ -32,7 +32,7 @@ PROBE_SPECS: dict[str, dict[str, list[tuple[str, int]]]] = {
         "get_t5_condenser_temperature": [("holding", 20290)],
         "get_t6_evaporator_temperature": [("holding", 20292)],
         "get_t7_inlet_temperature_after_heater": [("holding", 20294)],
-        "get_t8_outdoor_temperature": [("input", 5159)],  # 20296 optional alt, not gated
+        "get_t8_outdoor_temperature": [("input", 5159), ("holding", 20296)],
         "get_t9_heater_temperature": [("holding", 20298)],
         "get_fan_speed_percent": [("holding", 21771)],
         "get_electric_water_heater_setpoint": [("holding", 20460)],

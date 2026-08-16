@@ -181,3 +181,56 @@ async def test_legacy_guard_skips_dead(make_fake_device):
 async def test_all_boards_have_supports_attribute():
     for cls in (Device, DeviceCTS700, DeviceCTS700Legacy, DeviceCTS700Nordic):
         assert hasattr(cls, "supports_attribute")
+
+
+async def test_nordic_t8_spec_guards_dead_20296(make_fake_device):
+    from custom_components.nilan.register_probe import (
+        PROBE_SPECS,
+        run_register_probe,
+    )
+
+    # 20xxx space dead, 5159 live
+    answers = {
+        ("holding", 20164): None, ("holding", 20288): None,
+        ("holding", 20290): None, ("holding", 20292): None,
+        ("holding", 20294): None, ("holding", 20296): None,
+        ("holding", 20298): None, ("holding", 21771): None,
+        ("holding", 20460): None, ("holding", 1328): 17,
+        ("holding", 1326): 90, ("holding", 1327): 90,
+        ("input", 5159): 196,
+    }
+    device = make_fake_device(answers)
+    await run_register_probe(device, PROBE_SPECS["CTS700_NORDIC"])
+    assert ("holding", 20296) in device._dead_registers
+    assert device.supports_attribute("get_t8_outdoor_temperature")
+    calls_before = len(device._modbus.calls)
+    t8 = await device.get_t8_outdoor_temperature()
+    assert t8 == 19.6  # 5159 raw 196 / 10 scale
+    assert ("holding", 20296) not in [c for c in device._modbus.calls[calls_before:]]
+
+
+async def test_cts602_t15_guard_skips_dead(make_fake_device):
+    from custom_components.nilan.device import Device
+
+    device = make_fake_device({("input", 215): None}, cls=Device)
+    device._dead_registers = {("input", 215)}
+    assert await device.get_t15_user_panel_temperature() is None
+    assert device._modbus.calls == []
+
+
+async def test_cts602_user_func_1_guard_skips_dead(make_fake_device):
+    from custom_components.nilan.device import Device
+
+    device = make_fake_device({("holding", 123): None}, cls=Device)
+    device._dead_registers = {("holding", 123)}
+    assert await device.get_user_function_1_state() is None
+    assert device._modbus.calls == []
+
+
+async def test_cts602_user_func_2_guard_skips_dead(make_fake_device):
+    from custom_components.nilan.device import Device
+
+    device = make_fake_device({("holding", 124): None}, cls=Device)
+    device._dead_registers = {("holding", 124)}
+    assert await device.get_user_function_2_state() is None
+    assert device._modbus.calls == []
