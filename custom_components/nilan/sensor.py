@@ -640,7 +640,7 @@ async def async_setup_entry(HomeAssistant, config_entry, async_add_entities):
                         m.state_class,
                         m.entity_category,
                         m.icon,
-                        m.enabled,
+                        m.enabled and device.supports_attribute(attribute),
                     )
                     for m in maps
                 ]
@@ -673,7 +673,9 @@ class NilanCTS602Sensor(SensorEntity, NilanEntity):
         self._attr_entity_category = entity_category
         self._attr_icon = icon
         self._name = name
-        self._attr_entity_registry_enabled_default = enabled
+        self._attr_entity_registry_enabled_default = (
+            enabled and device.supports_attribute(attribute)
+        )
         self._attr_has_entity_name = True
         self._attr_translation_key = self._name
         self._attr_unique_id = self.make_unique_id(self._name)

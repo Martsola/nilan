@@ -119,3 +119,41 @@ async def test_sensor_maps_have_filter_entities():
         "get_filter_interval_exhaust",
     ):
         assert name in ATTRIBUTE_TO_SENSORS
+
+
+async def test_sensor_platform_disables_unsupported(make_fake_device):
+    from custom_components.nilan.sensor import NilanCTS602Sensor
+
+    device = make_fake_device({})
+    device._unsupported_attributes = {"get_average_humidity"}
+    sensor = NilanCTS602Sensor(
+        device,
+        "get_average_humidity",
+        "average_humidity",
+        None,
+        None,
+        None,
+        None,
+        None,
+        True,
+    )
+    assert sensor._attr_entity_registry_enabled_default is False
+
+
+async def test_sensor_platform_keeps_supported(make_fake_device):
+    from custom_components.nilan.sensor import NilanCTS602Sensor
+
+    device = make_fake_device({})
+    device._unsupported_attributes = set()
+    sensor = NilanCTS602Sensor(
+        device,
+        "get_average_humidity",
+        "average_humidity",
+        None,
+        None,
+        None,
+        None,
+        None,
+        True,
+    )
+    assert sensor._attr_entity_registry_enabled_default is True
