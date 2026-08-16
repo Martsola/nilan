@@ -693,7 +693,7 @@ class CTS700NordicRegisters:
     filter_interval_inlet = 1326
     filter_interval_exhaust = 1327
     filter_remaining_inlet = 1328
-    filter_remaining_exhaust = 1329
+    filter_remaining_exhaust = 1329  # reserved: no entity wired yet
     average_humidity = 20164
     hot_water_set_point = 20460
     t4_exhaust = 20288  # T4 Afgang veksler

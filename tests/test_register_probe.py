@@ -209,6 +209,26 @@ async def test_nordic_t8_spec_guards_dead_20296(make_fake_device):
     assert ("holding", 20296) not in [c for c in device._modbus.calls[calls_before:]]
 
 
+async def test_nordic_days_to_spec_guards_dead_20103(make_fake_device):
+    from custom_components.nilan.register_probe import (
+        PROBE_SPECS,
+        run_register_probe,
+    )
+
+    # 1328 live, 20103 dead
+    answers = {
+        ("holding", 1328): 17,
+        ("holding", 20103): None,
+    }
+    device = make_fake_device(answers)
+    await run_register_probe(device, PROBE_SPECS["CTS700_NORDIC"])
+    assert ("holding", 20103) in device._dead_registers
+    assert device.supports_attribute("get_days_to_air_filter_change")
+    calls_before = len(device._modbus.calls)
+    assert await device.get_days_to_air_filter_change() == 17  # 1328 early return
+    assert ("holding", 20103) not in [c for c in device._modbus.calls[calls_before:]]
+
+
 async def test_cts602_t15_guard_skips_dead(make_fake_device):
     from custom_components.nilan.device import Device
 

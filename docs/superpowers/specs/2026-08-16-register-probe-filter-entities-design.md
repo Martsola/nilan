@@ -115,11 +115,11 @@ CTS700_NORDIC_PROBE = {
     "get_t5_condenser_temperature":         [("holding", 20290)],
     "get_t6_evaporator_temperature":        [("holding", 20292)],
     "get_t7_inlet_temperature_after_heater":[("holding", 20294)],
-    "get_t8_outdoor_temperature":           [("input", 5159)],      # 20296 optional alt, not gated
+    "get_t8_outdoor_temperature":           [("input", 5159), ("holding", 20296)],
     "get_t9_heater_temperature":            [("holding", 20298)],
     "get_fan_speed_percent":                [("holding", 21771)],
     "get_electric_water_heater_setpoint":   [("holding", 20460)],
-    "get_days_to_air_filter_change":        [("holding", 1328)],    # NEW primary; 20103 fallback
+    "get_days_to_air_filter_change":        [("holding", 1328), ("holding", 20103)],
     "get_days_since_air_filter_change":     [("holding", 1326), ("holding", 1328)],
     "get_filter_interval_inlet":            [("holding", 1326)],    # NEW diagnostic
     "get_filter_interval_exhaust":          [("holding", 1327)],    # NEW diagnostic
@@ -128,13 +128,12 @@ CTS700_NORDIC_PROBE = {
 
 Decisions:
 
-- T8 spec = input 5159 only. 20296 is an optional alternate, never gated. If
-  5159 live → T8 enabled, 20296 reads dead-guarded. If 5159 dead → entity
-  disabled (20296 moot).
-- Filter days: 1328 (remaining) primary for Nordic. 20103 kept in register map
-  but excluded from probe → dead-guarded → silent. Variants with only 20103:
-  probe marks getter unsupported (1328 dead), user re-enables, getter fallback
-  serves 20103.
+- T8 spec = input 5159 + holding 20296. 20296 probed so dead 20296 is
+  dead-guarded; 5159 live keeps entity enabled. If both dead → entity disabled.
+- Filter days: 1328 (remaining) primary for Nordic, 20103 probed as fallback.
+  1328 live → enabled, 20103 dead-guarded. Both dead → entity disabled.
+  Variants with only 20103: probe marks getter unsupported (1328 dead), user
+  re-enables, getter fallback serves 20103.
 - Other boards get their own probe tables for their own uncertain registers:
   - CTS602: input 215, holding 123, holding 124.
   - 2018+ CTS700: 21771, 20296, 20103 set.

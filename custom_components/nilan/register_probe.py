@@ -36,7 +36,10 @@ PROBE_SPECS: dict[str, dict[str, list[tuple[str, int]]]] = {
         "get_t9_heater_temperature": [("holding", 20298)],
         "get_fan_speed_percent": [("holding", 21771)],
         "get_electric_water_heater_setpoint": [("holding", 20460)],
-        "get_days_to_air_filter_change": [("holding", 1328)],
+        "get_days_to_air_filter_change": [
+            ("holding", 1328),
+            ("holding", 20103),
+        ],
         "get_days_since_air_filter_change": [
             ("holding", 1326),
             ("holding", 1328),
