@@ -104,7 +104,9 @@ async def run_register_probe(device: Any, spec: dict) -> None:
         )
 
 
-def serialize_dead_registers(dead: set[tuple[str, int]]) -> list[list[str, int]]:
+def serialize_dead_registers(
+    dead: set[tuple[str, int]],
+) -> list[list[str | int]]:
     """JSON-safe form for config entry storage."""
     return sorted([[kind, address] for kind, address in dead])
 

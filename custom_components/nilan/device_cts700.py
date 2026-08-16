@@ -138,11 +138,11 @@ class DeviceCTS700:
         if self._stored_dead_registers is None:
             try:
                 await run_register_probe(self, PROBE_SPECS["CTS700"])
+                self._probe_ran = True
             except Exception:  # noqa: BLE001 — probe must never fail setup
                 _LOGGER.warning(
                     "CTS700 register probe failed; continuing with core-only setup"
                 )
-            self._probe_ran = True
 
         outdoor = await self.get_t1_intake_temperature()
         if outdoor is not None:

@@ -149,11 +149,11 @@ class DeviceCTS700Legacy:
         if self._stored_dead_registers is None:
             try:
                 await run_register_probe(self, PROBE_SPECS["CTS700_LEGACY"])
+                self._probe_ran = True
             except Exception:  # noqa: BLE001 — probe must never fail setup
                 _LOGGER.warning(
                     "CTS700 legacy register probe failed; continuing with core-only setup"
                 )
-            self._probe_ran = True
 
     def get_assigned(self, platform: str):
         """Get platform assignment."""

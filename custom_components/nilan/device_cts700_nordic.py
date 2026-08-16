@@ -143,11 +143,11 @@ class DeviceCTS700Nordic:
         if self._stored_dead_registers is None:
             try:
                 await run_register_probe(self, PROBE_SPECS["CTS700_NORDIC"])
+                self._probe_ran = True
             except Exception:  # noqa: BLE001 — probe must never fail setup
                 _LOGGER.warning(
                     "CTS700 Nordic register probe failed; continuing with core-only setup"
                 )
-            self._probe_ran = True
         self._device_sw_ver = "CTS700 Nordic/Polar/Arctic hybrid map"
         _LOGGER.debug(
             "CTS700 Nordic attributes=%s capabilities=%s",

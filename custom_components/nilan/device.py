@@ -200,11 +200,11 @@ class Device:
         if self._stored_dead_registers is None:
             try:
                 await run_register_probe(self, PROBE_SPECS["CTS602"])
+                self._probe_ran = True
             except Exception:  # noqa: BLE001 — probe must never fail setup
                 _LOGGER.warning(
                     "CTS602 register probe failed; continuing with core-only setup"
                 )
-            self._probe_ran = True
 
     def get_assigned(self, platform: str):
         """Get platform assignment."""
