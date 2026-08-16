@@ -75,6 +75,8 @@ class DeviceCTS700Nordic:
         self._attributes = {}
         self._board_type = "CTS700_NORDIC"
         self._capabilities: frozenset[str] = frozenset()
+        self._dead_registers: set[tuple[str, int]] = set()
+        self._unsupported_attributes: set[str] = set()
 
     async def async_close(self):
         """Close modbus connection."""
@@ -103,6 +105,10 @@ class DeviceCTS700Nordic:
         self._attributes = filter_attributes_by_capabilities(
             self._attributes, CTS700_NORDIC_ENTITY_MAP, caps
         )
+
+        from .register_probe import PROBE_SPECS, run_register_probe
+
+        await run_register_probe(self, PROBE_SPECS["CTS700_NORDIC"])
 
         outdoor = await self.get_t1_intake_temperature()
         if outdoor is not None:
@@ -148,8 +154,14 @@ class DeviceCTS700Nordic:
         """Return device attributes."""
         return self._attributes
 
+    def supports_attribute(self, name: str) -> bool:
+        """True when the probed registers for this attribute are alive."""
+        return name not in self._unsupported_attributes
+
     async def _read_holding(self, address: int) -> int | None:
         """Read one holding register as signed int."""
+        if ("holding", address) in self._dead_registers:
+            return None
         result = await self._modbus.async_pb_call(
             self._unit_id, address, 1, "holding"
         )
@@ -163,6 +175,8 @@ class DeviceCTS700Nordic:
 
     async def _read_holding_unsigned(self, address: int) -> int | None:
         """Read one holding register as unsigned int."""
+        if ("holding", address) in self._dead_registers:
+            return None
         result = await self._modbus.async_pb_call(
             self._unit_id, address, 1, "holding"
         )
@@ -176,6 +190,8 @@ class DeviceCTS700Nordic:
 
     async def _read_input(self, address: int) -> int | None:
         """Read one input register as signed int."""
+        if ("input", address) in self._dead_registers:
+            return None
         result = await self._modbus.async_pb_call(
             self._unit_id, address, 1, "input"
         )
@@ -189,6 +205,8 @@ class DeviceCTS700Nordic:
 
     async def _read_input_unsigned(self, address: int) -> int | None:
         """Read one input register as unsigned int."""
+        if ("input", address) in self._dead_registers:
+            return None
         result = await self._modbus.async_pb_call(
             self._unit_id, address, 1, "input"
         )

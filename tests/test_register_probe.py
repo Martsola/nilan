@@ -41,3 +41,28 @@ async def test_probe_specs_cover_all_boards():
             for kind, addr in regs:
                 assert kind in ("holding", "input")
                 assert isinstance(addr, int)
+
+
+from custom_components.nilan.device_cts700_nordic import DeviceCTS700Nordic
+
+
+async def test_nordic_guard_skips_dead_register(make_fake_device):
+    device = make_fake_device({("holding", 20296): None})
+    device._dead_registers = {("holding", 20296)}
+    value = await device._read_holding(20296)
+    assert value is None
+    assert device._modbus.calls == []  # no Modbus call made
+
+
+async def test_nordic_guard_passes_live_register(make_fake_device):
+    device = make_fake_device({("holding", 20288): 25})
+    value = await device._read_holding(20288)
+    assert value == 25
+    assert device._modbus.calls == [("holding", 20288)]
+
+
+async def test_nordic_supports_attribute(make_fake_device):
+    device = make_fake_device({})
+    device._unsupported_attributes = {"get_average_humidity"}
+    assert not device.supports_attribute("get_average_humidity")
+    assert device.supports_attribute("get_t1_intake_temperature")
