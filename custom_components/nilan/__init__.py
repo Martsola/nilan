@@ -24,6 +24,7 @@ from .device_cts700 import DeviceCTS700
 from .device_cts700_legacy import DeviceCTS700Legacy
 from .device_cts700_nordic import DeviceCTS700Nordic
 from .modbus_hub_util import build_modbus_hub_name
+from .register_probe import serialize_dead_registers
 
 PLATFORMS = [
     "binary_sensor",
@@ -94,6 +95,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     com_type = entry.data["com_type"]
     host_ip = entry.data["host_ip"]
     board_type = entry.data.get("board_type", "CTS602")
+    stored_dead = entry.data.get("dead_registers")
     hub_name = build_modbus_hub_name(
         name,
         entry_id=entry.entry_id,
@@ -103,19 +105,47 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     if board_type == BOARD_TYPE_CTS700:
         device = DeviceCTS700(
-            hass, name, com_type, host_ip, host_port, unit_id, hub_name=hub_name
+            hass,
+            name,
+            com_type,
+            host_ip,
+            host_port,
+            unit_id,
+            hub_name=hub_name,
+            stored_dead_registers=stored_dead,
         )
     elif board_type == BOARD_TYPE_CTS700_LEGACY:
         device = DeviceCTS700Legacy(
-            hass, name, com_type, host_ip, host_port, unit_id, hub_name=hub_name
+            hass,
+            name,
+            com_type,
+            host_ip,
+            host_port,
+            unit_id,
+            hub_name=hub_name,
+            stored_dead_registers=stored_dead,
         )
     elif board_type == BOARD_TYPE_CTS700_NORDIC:
         device = DeviceCTS700Nordic(
-            hass, name, com_type, host_ip, host_port, unit_id, hub_name=hub_name
+            hass,
+            name,
+            com_type,
+            host_ip,
+            host_port,
+            unit_id,
+            hub_name=hub_name,
+            stored_dead_registers=stored_dead,
         )
     else:
         device = Device(
-            hass, name, com_type, host_ip, host_port, unit_id, hub_name=hub_name
+            hass,
+            name,
+            com_type,
+            host_ip,
+            host_port,
+            unit_id,
+            hub_name=hub_name,
+            stored_dead_registers=stored_dead,
         )
     try:
         await device.setup()
@@ -129,6 +159,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ) from ex
 
     await _async_migrate_unique_ids(hass, entry, hub_name, device)
+    if getattr(device, "_probe_ran", False):
+        hass.config_entries.async_update_entry(
+            entry,
+            data={
+                **entry.data,
+                "dead_registers": serialize_dead_registers(device._dead_registers),
+            },
+        )
     hass.data[DOMAIN][entry.entry_id] = device
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

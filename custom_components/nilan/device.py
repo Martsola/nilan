@@ -14,6 +14,11 @@ from .capabilities import (
 )
 from .device_map import CTS602_DEVICE_TYPES, CTS602_ENTITY_MAP
 from .modbus_hub_util import build_modbus_hub_name, wait_for_modbus_connected
+from .register_probe import (
+    PROBE_SPECS,
+    deserialize_dead_registers,
+    run_register_probe,
+)
 from .registers import CTS602HoldingRegisters, CTS602InputRegisters
 
 _LOGGER = logging.getLogger(__name__)
@@ -31,6 +36,7 @@ class Device:
         host_port,
         unit_id,
         hub_name: str | None = None,
+        stored_dead_registers: list | None = None,
     ) -> None:
         """Create new entity of Device Class."""
         self.hass = hass
@@ -64,6 +70,8 @@ class Device:
         self._capabilities = frozenset()
         self._dead_registers: set[tuple[str, int]] = set()
         self._unsupported_attributes: set[str] = set()
+        self._stored_dead_registers = stored_dead_registers
+        self._probe_ran = False
 
     async def async_close(self):
         """Close modbus connection."""
@@ -166,12 +174,30 @@ class Device:
         )
         _LOGGER.debug("CTS602 capabilities=%s", sorted(caps))
 
-        try:
-            from .register_probe import PROBE_SPECS, run_register_probe
-
-            await run_register_probe(self, PROBE_SPECS["CTS602"])
-        except Exception:  # noqa: BLE001 — probe must never fail setup
-            _LOGGER.warning("CTS602 register probe failed; continuing with core-only setup")
+        if self._stored_dead_registers is not None:
+            self._dead_registers = deserialize_dead_registers(
+                self._stored_dead_registers
+            )
+            self._unsupported_attributes = {
+                attr
+                for attr, regs in PROBE_SPECS["CTS602"].items()
+                if all(
+                    (kind, address) in self._dead_registers
+                    for kind, address in regs
+                )
+            }
+            _LOGGER.debug(
+                "Loaded %d dead registers from stored config",
+                len(self._dead_registers),
+            )
+        else:
+            try:
+                await run_register_probe(self, PROBE_SPECS["CTS602"])
+            except Exception:  # noqa: BLE001 — probe must never fail setup
+                _LOGGER.warning(
+                    "CTS602 register probe failed; continuing with core-only setup"
+                )
+            self._probe_ran = True
 
     def get_assigned(self, platform: str):
         """Get platform assignment."""

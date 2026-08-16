@@ -283,3 +283,54 @@ async def test_cts602_user_func_2_guard_skips_dead(make_fake_device):
     device._dead_registers = {("holding", 124)}
     assert await device.get_user_function_2_state() is None
     assert device._modbus.calls == []
+
+
+from custom_components.nilan.register_probe import (
+    PROBE_SPECS,
+    deserialize_dead_registers,
+    run_register_probe,
+    serialize_dead_registers,
+)
+
+
+async def test_serialize_roundtrip():
+    dead = {("holding", 20103), ("input", 215)}
+    stored = serialize_dead_registers(dead)
+    assert isinstance(stored, list)
+    for item in stored:
+        assert isinstance(item, list) and len(item) == 2
+    assert deserialize_dead_registers(stored) == dead
+
+
+async def test_stored_dead_skips_probe(make_fake_device):
+    device = make_fake_device({})  # would mark everything dead if probed
+    device._stored_dead_registers = [["holding", 20103], ["input", 5159]]
+    # simulate setup() probe-branch: load path used
+    device._dead_registers = deserialize_dead_registers(device._stored_dead_registers)
+    device._unsupported_attributes = {
+        attr
+        for attr, regs in PROBE_SPECS["CTS700_NORDIC"].items()
+        if all((kind, address) in device._dead_registers for kind, address in regs)
+    }
+    assert device._modbus.calls == []  # no probe reads
+    assert ("holding", 20103) in device._dead_registers
+
+
+async def test_stored_derives_unsupported_from_spec(make_fake_device):
+    device = make_fake_device({("holding", 1329): 17})
+    device._stored_dead_registers = [["holding", 1328], ["holding", 1326], ["holding", 1327]]
+    device._dead_registers = deserialize_dead_registers(device._stored_dead_registers)
+    device._unsupported_attributes = {
+        attr
+        for attr, regs in PROBE_SPECS["CTS700_NORDIC"].items()
+        if all((kind, address) in device._dead_registers for kind, address in regs)
+    }
+    # 1328+1326 dead -> days_since_inlet unsupported; 1329 alive -> exhaust supported
+    assert "get_days_since_inlet_filter_change" in device._unsupported_attributes
+    assert "get_days_to_exhaust_filter_change" not in device._unsupported_attributes
+    # dead-guarded getter returns None WITHOUT calling modbus
+    calls_before = len(device._modbus.calls)
+    assert await device.get_days_since_inlet_filter_change() is None
+    assert device._modbus.calls[calls_before:] == []
+    # live exhaust getter still reads 1329
+    assert await device.get_days_to_exhaust_filter_change() == 17
