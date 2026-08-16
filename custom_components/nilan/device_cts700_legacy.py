@@ -124,22 +124,29 @@ class DeviceCTS700Legacy:
         _LOGGER.debug("CTS700 legacy capabilities=%s", sorted(caps))
 
         if self._stored_dead_registers is not None:
-            self._dead_registers = deserialize_dead_registers(
-                self._stored_dead_registers
-            )
-            self._unsupported_attributes = {
-                attr
-                for attr, regs in PROBE_SPECS["CTS700_LEGACY"].items()
-                if all(
-                    (kind, address) in self._dead_registers
-                    for kind, address in regs
+            try:
+                self._dead_registers = deserialize_dead_registers(
+                    self._stored_dead_registers
                 )
-            }
-            _LOGGER.debug(
-                "Loaded %d dead registers from stored config",
-                len(self._dead_registers),
-            )
-        else:
+            except (TypeError, ValueError):
+                _LOGGER.warning(
+                    "Stored dead-register data invalid; re-probing"
+                )
+                self._stored_dead_registers = None
+            if self._stored_dead_registers is not None:
+                self._unsupported_attributes = {
+                    attr
+                    for attr, regs in PROBE_SPECS["CTS700_LEGACY"].items()
+                    if all(
+                        (kind, address) in self._dead_registers
+                        for kind, address in regs
+                    )
+                }
+                _LOGGER.debug(
+                    "Loaded %d dead registers from stored config",
+                    len(self._dead_registers),
+                )
+        if self._stored_dead_registers is None:
             try:
                 await run_register_probe(self, PROBE_SPECS["CTS700_LEGACY"])
             except Exception:  # noqa: BLE001 — probe must never fail setup

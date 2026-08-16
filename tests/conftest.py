@@ -1,4 +1,5 @@
 """Shared test fixtures for the Nilan integration."""
+import asyncio
 import sys
 import types
 from pathlib import Path
@@ -75,6 +76,11 @@ def make_fake_device():
         class FakeModbus:
             def __init__(self):
                 self.calls = []
+                self.event_connected = asyncio.Event()
+                self.event_connected.set()
+
+            async def async_setup(self):
+                return True
 
             async def async_pb_call(self, unit_id, address, count, kind):
                 self.calls.append((kind, address))

@@ -334,3 +334,44 @@ async def test_stored_derives_unsupported_from_spec(make_fake_device):
     assert device._modbus.calls[calls_before:] == []
     # live exhaust getter still reads 1329
     assert await device.get_days_to_exhaust_filter_change() == 17
+
+
+async def test_setup_load_branch_skips_probe(make_fake_device):
+    # core probe registers live so setup() proceeds to the load-or-probe branch
+    answers = {("input", 5154): 222, ("input", 5152): 196}
+    device = make_fake_device(answers)
+    device._stored_dead_registers = [["holding", 20103]]
+    await device.setup()
+    assert device._probe_ran is False
+    assert ("holding", 20103) in device._dead_registers
+    # no probe reads of the 20xxx batch happened — only core reads
+    probe_addrs = {a for _, a in device._modbus.calls if a > 20000}
+    assert probe_addrs == set()
+
+
+async def test_setup_probe_branch_sets_flag(make_fake_device):
+    from custom_components.nilan.register_probe import PROBE_SPECS
+
+    # core probes + every spec register live so nothing is marked dead
+    answers = {("input", 5154): 222, ("input", 5152): 196}
+    answers.update(
+        {
+            reg: 1
+            for regs in PROBE_SPECS["CTS700_NORDIC"].values()
+            for reg in regs
+        }
+    )
+    device = make_fake_device(answers)
+    await device.setup()
+    assert device._probe_ran is True
+    assert device._dead_registers == set()  # all answers live
+
+
+async def test_setup_invalid_stored_falls_back_to_probe(make_fake_device):
+    # malformed stored data must not raise out of setup(); fall back to probe
+    answers = {("input", 5154): 222, ("input", 5152): 196}
+    device = make_fake_device(answers)
+    device._stored_dead_registers = [["holding", "abc"]]
+    await device.setup()
+    assert device._probe_ran is True
+    assert ("holding", 20103) in device._dead_registers  # probe ran
