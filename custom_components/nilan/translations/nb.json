@@ -739,6 +739,24 @@
                                   "days_to_air_filter_change":  {
                                                                     "name":  "Dager til luftfilterbytte"
                                                                 },
+                                  "days_since_inlet_filter_change":  {
+                                                                        "name":  "Dager siden tilluftsfilterbytte"
+                                                                    },
+                                  "days_to_inlet_filter_change":  {
+                                                                    "name":  "Dager til tilluftsfilterbytte"
+                                                                },
+                                  "days_since_exhaust_filter_change":  {
+                                                                        "name":  "Dager siden avtrekksfilterbytte"
+                                                                    },
+                                  "days_to_exhaust_filter_change":  {
+                                                                    "name":  "Dager til avtrekksfilterbytte"
+                                                                },
+                                  "filter_interval_inlet":  {
+                                                                "name":  "Tilluftsfilter intervall"
+                                                            },
+                                  "filter_interval_exhaust":  {
+                                                                  "name":  "Avtrekksfilter intervall"
+                                                              },
                                   "climate_season":  {
                                                          "name":  "Klimasesong",
                                                          "state":  {

@@ -510,17 +510,29 @@ class DeviceCTS700Nordic:
             return None
         return float(value)
 
-    async def get_days_to_air_filter_change(self) -> int | None:
-        """Days until filter change (holding 1328 remaining; 20103 fallback)."""
+    async def get_days_to_inlet_filter_change(self) -> int | None:
+        """Days until inlet filter change (holding 1328 remaining; 20103 fallback)."""
         remaining = await self._read_holding_unsigned(Reg.filter_remaining_inlet)
         if remaining is not None:
             return remaining
         return await self._read_holding_unsigned(Reg.filter_days)
 
-    async def get_days_since_air_filter_change(self) -> int | None:
-        """Days since last filter change (interval - remaining)."""
+    async def get_days_since_inlet_filter_change(self) -> int | None:
+        """Days since last inlet filter change (interval - remaining)."""
         interval = await self._read_holding_unsigned(Reg.filter_interval_inlet)
         remaining = await self._read_holding_unsigned(Reg.filter_remaining_inlet)
+        if interval is None or remaining is None:
+            return None
+        return max(0, interval - remaining)
+
+    async def get_days_to_exhaust_filter_change(self) -> int | None:
+        """Days until exhaust filter change (holding 1329 remaining)."""
+        return await self._read_holding_unsigned(Reg.filter_remaining_exhaust)
+
+    async def get_days_since_exhaust_filter_change(self) -> int | None:
+        """Days since last exhaust filter change (interval - remaining)."""
+        interval = await self._read_holding_unsigned(Reg.filter_interval_exhaust)
+        remaining = await self._read_holding_unsigned(Reg.filter_remaining_exhaust)
         if interval is None or remaining is None:
             return None
         return max(0, interval - remaining)

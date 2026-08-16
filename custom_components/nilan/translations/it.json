@@ -448,6 +448,12 @@
           "alarms_active": {"name": "Allarmi attivi"},
           "days_since_air_filter_change": {"name": "Giorni dal cambio filtri aria"},
           "days_to_air_filter_change": {"name": "Giorni al cambio filtri aria"},
+          "days_since_inlet_filter_change": {"name": "Giorni dal cambio filtro mandata"},
+          "days_to_inlet_filter_change": {"name": "Giorni al cambio filtro mandata"},
+          "days_since_exhaust_filter_change": {"name": "Giorni dal cambio filtro espulsione"},
+          "days_to_exhaust_filter_change": {"name": "Giorni al cambio filtro espulsione"},
+          "filter_interval_inlet": {"name": "Intervallo filtro mandata"},
+          "filter_interval_exhaust": {"name": "Intervallo filtro espulsione"},
           "climate_season": {
               "name": "Modalità stagione",
               "state": {

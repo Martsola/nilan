@@ -488,6 +488,12 @@
           "alarms_active": {"name": "Aktiivisia Hälytyksiä"},
           "days_since_air_filter_change": {"name": "Päiviä Suodatinvaihdosta"},
           "days_to_air_filter_change": {"name": "Päiviä Suodatinvaihtoon"},
+          "days_since_inlet_filter_change": {"name": "Päiviä Tulopuolen Suodatinvaihdosta"},
+          "days_to_inlet_filter_change": {"name": "Päiviä Tulopuolen Suodatinvaihtoon"},
+          "days_since_exhaust_filter_change": {"name": "Päiviä Poistopuolen Suodatinvaihdosta"},
+          "days_to_exhaust_filter_change": {"name": "Päiviä Poistopuolen Suodatinvaihtoon"},
+          "filter_interval_inlet": {"name": "Tulopuolen Suodatinväli"},
+          "filter_interval_exhaust": {"name": "Poistopuolen Suodatinväli"},
           "climate_season": {
               "name": "Kausi",
               "state": {

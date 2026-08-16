@@ -798,6 +798,24 @@
                                   "days_to_air_filter_change":  {
                                                                     "name":  "Days To Air Filter Change"
                                                                 },
+                                  "days_since_inlet_filter_change":  {
+                                                                        "name":  "Days Since Inlet Filter Change"
+                                                                    },
+                                  "days_to_inlet_filter_change":  {
+                                                                    "name":  "Days To Inlet Filter Change"
+                                                                },
+                                  "days_since_exhaust_filter_change":  {
+                                                                        "name":  "Days Since Exhaust Filter Change"
+                                                                    },
+                                  "days_to_exhaust_filter_change":  {
+                                                                    "name":  "Days To Exhaust Filter Change"
+                                                                },
+                                  "filter_interval_inlet":  {
+                                                                "name":  "Filter Interval Inlet"
+                                                            },
+                                  "filter_interval_exhaust":  {
+                                                                  "name":  "Filter Interval Exhaust"
+                                                              },
                                   "climate_season":  {
                                                          "name":  "Climate Season",
                                                          "state":  {

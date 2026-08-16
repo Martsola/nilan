@@ -448,6 +448,12 @@
           "alarms_active": {"name": "Aktive Alarme"},
           "days_since_air_filter_change": {"name": "Tage seit dem letzten Filterwechsel"},
           "days_to_air_filter_change": {"name": "Tage bis zum nächsten Filterwechsel"},
+          "days_since_inlet_filter_change": {"name": "Tage seit Zuluftfilterwechsel"},
+          "days_to_inlet_filter_change": {"name": "Tage bis Zuluftfilterwechsel"},
+          "days_since_exhaust_filter_change": {"name": "Tage seit Abluftfilterwechsel"},
+          "days_to_exhaust_filter_change": {"name": "Tage bis Abluftfilterwechsel"},
+          "filter_interval_inlet": {"name": "Zuluftfilter Intervall"},
+          "filter_interval_exhaust": {"name": "Abluftfilter Intervall"},
           "climate_season": {
               "name": "Klima Saison",
               "state": {

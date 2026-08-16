@@ -70,20 +70,30 @@ async def test_nordic_supports_attribute(make_fake_device):
 
 async def test_filter_days_to_remaining(make_fake_device):
     device = make_fake_device({("holding", 1328): 17, ("holding", 1326): 90})
-    assert await device.get_days_to_air_filter_change() == 17
+    assert await device.get_days_to_inlet_filter_change() == 17
 
 
 async def test_filter_days_to_fallback_20103(make_fake_device):
     # 1328 dead, 20103 live (variant with legacy-style register)
     device = make_fake_device({("holding", 20103): 17})
     device._dead_registers = {("holding", 1328)}
-    assert await device.get_days_to_air_filter_change() == 17
+    assert await device.get_days_to_inlet_filter_change() == 17
     assert ("holding", 20103) in [c for c in device._modbus.calls]
 
 
 async def test_filter_days_since_math(make_fake_device):
     device = make_fake_device({("holding", 1326): 90, ("holding", 1328): 17})
-    assert await device.get_days_since_air_filter_change() == 73
+    assert await device.get_days_since_inlet_filter_change() == 73
+
+
+async def test_filter_days_to_exhaust(make_fake_device):
+    device = make_fake_device({("holding", 1329): 17})
+    assert await device.get_days_to_exhaust_filter_change() == 17
+
+
+async def test_filter_days_since_exhaust_math(make_fake_device):
+    device = make_fake_device({("holding", 1327): 90, ("holding", 1329): 17})
+    assert await device.get_days_since_exhaust_filter_change() == 73
 
 
 async def test_filter_intervals(make_fake_device):
@@ -95,7 +105,7 @@ async def test_filter_intervals(make_fake_device):
 async def test_days_since_returns_none_when_interval_missing(make_fake_device):
     device = make_fake_device({("holding", 1328): 17})
     device._dead_registers = {("holding", 1326)}
-    assert await device.get_days_since_air_filter_change() is None
+    assert await device.get_days_since_inlet_filter_change() is None
 
 
 async def test_nordic_map_has_filter_entities():
@@ -103,8 +113,10 @@ async def test_nordic_map_has_filter_entities():
         CTS700_NORDIC_ENTITY_MAP,
     )
     for name in (
-        "get_days_to_air_filter_change",
-        "get_days_since_air_filter_change",
+        "get_days_to_inlet_filter_change",
+        "get_days_since_inlet_filter_change",
+        "get_days_to_exhaust_filter_change",
+        "get_days_since_exhaust_filter_change",
         "get_filter_interval_inlet",
         "get_filter_interval_exhaust",
     ):
@@ -114,7 +126,10 @@ async def test_nordic_map_has_filter_entities():
 async def test_sensor_maps_have_filter_entities():
     from custom_components.nilan.sensor import ATTRIBUTE_TO_SENSORS
     for name in (
-        "get_days_since_air_filter_change",
+        "get_days_since_inlet_filter_change",
+        "get_days_to_inlet_filter_change",
+        "get_days_since_exhaust_filter_change",
+        "get_days_to_exhaust_filter_change",
         "get_filter_interval_inlet",
         "get_filter_interval_exhaust",
     ):
@@ -223,10 +238,24 @@ async def test_nordic_days_to_spec_guards_dead_20103(make_fake_device):
     device = make_fake_device(answers)
     await run_register_probe(device, PROBE_SPECS["CTS700_NORDIC"])
     assert ("holding", 20103) in device._dead_registers
-    assert device.supports_attribute("get_days_to_air_filter_change")
+    assert device.supports_attribute("get_days_to_inlet_filter_change")
     calls_before = len(device._modbus.calls)
-    assert await device.get_days_to_air_filter_change() == 17  # 1328 early return
+    assert await device.get_days_to_inlet_filter_change() == 17  # 1328 early return
     assert ("holding", 20103) not in [c for c in device._modbus.calls[calls_before:]]
+
+
+async def test_nordic_probe_spec_exhaust_gated(make_fake_device):
+    from custom_components.nilan.register_probe import (
+        PROBE_SPECS,
+        run_register_probe,
+    )
+
+    # 1327 and 1329 dead -> both exhaust day attrs unsupported
+    answers = {("holding", 1329): None, ("holding", 1327): None}
+    device = make_fake_device(answers)
+    await run_register_probe(device, PROBE_SPECS["CTS700_NORDIC"])
+    assert not device.supports_attribute("get_days_to_exhaust_filter_change")
+    assert not device.supports_attribute("get_days_since_exhaust_filter_change")
 
 
 async def test_cts602_t15_guard_skips_dead(make_fake_device):

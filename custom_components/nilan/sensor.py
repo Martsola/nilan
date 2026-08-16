@@ -333,6 +333,50 @@ ATTRIBUTE_TO_SENSORS = {
             True,
         )
     ],
+    "get_days_since_inlet_filter_change": [
+        Map(
+            "days_since_inlet_filter_change",
+            UnitOfTime.DAYS,
+            None,
+            SensorStateClass.MEASUREMENT,
+            None,
+            "mdi:calendar-start",
+            True,
+        )
+    ],
+    "get_days_to_inlet_filter_change": [
+        Map(
+            "days_to_inlet_filter_change",
+            UnitOfTime.DAYS,
+            None,
+            SensorStateClass.MEASUREMENT,
+            None,
+            "mdi:calendar-end",
+            True,
+        )
+    ],
+    "get_days_since_exhaust_filter_change": [
+        Map(
+            "days_since_exhaust_filter_change",
+            UnitOfTime.DAYS,
+            None,
+            SensorStateClass.MEASUREMENT,
+            None,
+            "mdi:calendar-start",
+            True,
+        )
+    ],
+    "get_days_to_exhaust_filter_change": [
+        Map(
+            "days_to_exhaust_filter_change",
+            UnitOfTime.DAYS,
+            None,
+            SensorStateClass.MEASUREMENT,
+            None,
+            "mdi:calendar-end",
+            True,
+        )
+    ],
     "get_summer_state": [
         Map(
             "climate_season",
