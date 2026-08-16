@@ -106,13 +106,15 @@ class DeviceCTS700Nordic:
             self._attributes, CTS700_NORDIC_ENTITY_MAP, caps
         )
 
-        from .register_probe import PROBE_SPECS, run_register_probe
-
-        await run_register_probe(self, PROBE_SPECS["CTS700_NORDIC"])
-
         outdoor = await self.get_t1_intake_temperature()
         if outdoor is not None:
             _LOGGER.debug("CTS700 Nordic outdoor probe %.1f C", outdoor)
+        try:
+            from .register_probe import PROBE_SPECS, run_register_probe
+
+            await run_register_probe(self, PROBE_SPECS["CTS700_NORDIC"])
+        except Exception:  # noqa: BLE001 — probe must never fail setup
+            _LOGGER.warning("CTS700 Nordic register probe failed; continuing with core-only setup")
         self._device_sw_ver = "CTS700 Nordic/Polar/Arctic hybrid map"
         _LOGGER.debug(
             "CTS700 Nordic attributes=%s capabilities=%s",
