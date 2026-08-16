@@ -37,11 +37,40 @@ Create `tests/conftest.py`:
 ```python
 """Shared test fixtures for the Nilan integration."""
 import sys
+import types
 from pathlib import Path
 
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "custom_components"))
+
+
+def _install_modbus_stub():
+    """Stub homeassistant.components.modbus before device imports.
+
+    The dev env's pymodbus version mismatches HA's modbus component
+    (ModbusResponse import fails), which would break importing the device
+    classes. Device classes only need the ModbusHub symbol at import time;
+    every test replaces the constructed hub with a fake afterwards.
+    """
+    modbus_mod = types.ModuleType("homeassistant.components.modbus.modbus")
+
+    class ModbusHub:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def async_setup(self):
+            return True
+
+    modbus_mod.ModbusHub = ModbusHub
+
+    pkg = types.ModuleType("homeassistant.components.modbus")
+    pkg.modbus = modbus_mod
+    sys.modules["homeassistant.components.modbus"] = pkg
+    sys.modules["homeassistant.components.modbus.modbus"] = modbus_mod
+
+
+_install_modbus_stub()
 
 from custom_components.nilan.device_cts700_nordic import DeviceCTS700Nordic
 
