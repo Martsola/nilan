@@ -157,3 +157,27 @@ async def test_sensor_platform_keeps_supported(make_fake_device):
         True,
     )
     assert sensor._attr_entity_registry_enabled_default is True
+
+
+from custom_components.nilan.device import Device
+from custom_components.nilan.device_cts700 import DeviceCTS700
+from custom_components.nilan.device_cts700_legacy import DeviceCTS700Legacy
+
+
+async def test_cts700_guard_skips_dead(make_fake_device):
+    device = make_fake_device({("holding", 20103): None}, cls=DeviceCTS700)
+    device._dead_registers = {("holding", 20103)}
+    assert await device._read_holding_unsigned(20103) is None
+    assert device._modbus.calls == []
+
+
+async def test_legacy_guard_skips_dead(make_fake_device):
+    device = make_fake_device({("holding", 1328): None}, cls=DeviceCTS700Legacy)
+    device._dead_registers = {("holding", 1328)}
+    assert await device._read_holding_unsigned(1328) is None
+    assert device._modbus.calls == []
+
+
+async def test_all_boards_have_supports_attribute():
+    for cls in (Device, DeviceCTS700, DeviceCTS700Legacy, DeviceCTS700Nordic):
+        assert hasattr(cls, "supports_attribute")

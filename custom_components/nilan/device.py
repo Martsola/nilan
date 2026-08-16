@@ -62,6 +62,8 @@ class Device:
         self._attributes = {}
         self._air_geo_type = 0
         self._capabilities = frozenset()
+        self._dead_registers: set[tuple[str, int]] = set()
+        self._unsupported_attributes: set[str] = set()
 
     async def async_close(self):
         """Close modbus connection."""
@@ -164,6 +166,13 @@ class Device:
         )
         _LOGGER.debug("CTS602 capabilities=%s", sorted(caps))
 
+        try:
+            from .register_probe import PROBE_SPECS, run_register_probe
+
+            await run_register_probe(self, PROBE_SPECS["CTS602"])
+        except Exception:  # noqa: BLE001 — probe must never fail setup
+            _LOGGER.warning("CTS602 register probe failed; continuing with core-only setup")
+
     def get_assigned(self, platform: str):
         """Get platform assignment."""
         slots = self._attributes
@@ -198,6 +207,10 @@ class Device:
     def get_attributes(self):
         """Return device attributes."""
         return self._attributes
+
+    def supports_attribute(self, name: str) -> bool:
+        """True when the probed registers for this attribute are alive."""
+        return name not in self._unsupported_attributes
 
     async def check_air_geo(self) -> int:
         """Check if machine type 44 has AIR/GEO support."""
@@ -1065,6 +1078,8 @@ class Device:
 
     async def get_t15_user_panel_temperature(self) -> float:
         """Get T15 user panel Temperature."""
+        if ("input", 215) in self._dead_registers:
+            return None
         result = await self._modbus.async_pb_call(
             self._unit_id, CTS602InputRegisters.input_t15_room, 1, "input"
         )
@@ -2630,6 +2645,8 @@ class Device:
 
     async def get_user_function_1_state(self) -> bool:
         """Get user function State."""
+        if ("holding", 123) in self._dead_registers:
+            return None
         result = await self._modbus.async_pb_call(
             self._unit_id, CTS602HoldingRegisters.output_user_func, 1, "holding"
         )
@@ -2647,6 +2664,8 @@ class Device:
 
     async def get_user_function_2_state(self) -> bool:
         """Get user function 2 State."""
+        if ("holding", 124) in self._dead_registers:
+            return None
         result = await self._modbus.async_pb_call(
             self._unit_id, CTS602HoldingRegisters.output_user_func_2, 1, "holding"
         )

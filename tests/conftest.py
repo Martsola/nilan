@@ -55,6 +55,8 @@ def _install_modbus_stub():
 
 _install_modbus_stub()
 
+from custom_components.nilan.device_cts700 import DeviceCTS700
+from custom_components.nilan.device_cts700_legacy import DeviceCTS700Legacy
 from custom_components.nilan.device_cts700_nordic import DeviceCTS700Nordic
 
 
@@ -67,9 +69,9 @@ class FakeResult:
 
 @pytest.fixture
 def make_fake_device():
-    """Real DeviceCTS700Nordic with a fake modbus hub answering from a map."""
+    """Real device class (cls-selectable) with a fake modbus hub from a map."""
 
-    def _make(answers: dict[tuple[str, int], int | None]):
+    def _make(answers: dict[tuple[str, int], int | None], cls=DeviceCTS700Nordic):
         class FakeModbus:
             def __init__(self):
                 self.calls = []
@@ -81,7 +83,7 @@ def make_fake_device():
                     return None
                 return FakeResult([value])
 
-        device = DeviceCTS700Nordic(
+        device = cls(
             None,
             "Test",
             "tcp",
